@@ -19,7 +19,7 @@ created: 2026-08-15
 | 03 | 递归 | 🌿 growing | 基线条件=刹车；深度上限 1000 实测 |
 | 04 | 快速排序 | 🌿 growing | 分而治之；**59 倍碾压选择排序；首元素 pivot 坏情况爆栈** |
 | 05 | 哈希表 | 🌿 growing | **从零实现 FNV-1a + 链式 + 扩容**；1379 倍碾压线性查找；坏哈希 n=10万直接卡死 |
-| 06 | BFS 广度优先 | ⬜ not-started | |
+| 06 | BFS 广度优先 | 🌿 growing | **从零实现队列+parent回溯**；同图 BFS 2 步 vs DFS 9 步；**六度分隔实测 6.6 跳** |
 | 07 | Dijkstra | ⬜ not-started | |
 | 08 | 贪心 | ⬜ not-started | |
 | 09 | 动态规划 | ⬜ not-started | |
