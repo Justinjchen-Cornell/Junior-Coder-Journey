@@ -1,7 +1,7 @@
 # 🧸 Junior Coder Journey · 父子编程之旅
 
-> **一个小鱼，一个老爸，一份 15 年的约定。**
-> 开始于 2026 年夏天，小鱼 3 岁半。那天，老爸决定把"编程"这件小事，
+> **一个小宥宥，一个老爸，一份 15 年的约定。**
+> 开始于 2026 年夏天，小宥宥 3 岁半。那天，老爸决定把"编程"这件小事，
 > 变成父子俩一起玩的漫长游戏。🎮
 
 ---
@@ -10,7 +10,7 @@
 
 | | 谁 | 角色 |
 |---|---|---|
-| 🐟 | **小鱼** | 3 岁半 · 总指挥官（指令他下，错误他背，功劳他领） |
+| 🐟 | **小宥宥** | 3 岁半 · 总指挥官（指令他下，错误他背，功劳他领） |
 | 👨 | **老爸** | 42 岁 · 头号"执行机器人"（听指令，会犯错，挨批评） |
 | 🤖 | **小机器人** | 每周一 9:00 准时敲门的提醒器（它从不忘记） |
 
@@ -52,9 +52,9 @@ python tools/new_week.py "主题"     # 1️⃣ 小机器人生成空模板（�
 git add -A && git commit -m "episode: W34 乌龟棋" && git push   # 3️⃣ 合上，收工
 ```
 
-## 💌 写给 18 岁的小鱼
+## 💌 写给 18 岁的小宥宥
 
-> 嗨，小鱼。
+> 嗨，小宥宥。
 > 如果你在某一天翻到了这里——恭喜你，你找到了一台**时光机**。
 > 这里有 3 岁半的你，指挥爸爸"转圈！转圈！"的样子；
 > 有 4 岁的你，第一次让地板机器人走出"正方形"时的欢呼；
@@ -67,4 +67,4 @@ git add -A && git commit -m "episode: W34 乌龟棋" && git push   # 3️⃣ 合
 
 ---
 
-*English: A 15-year father-son journey in computational thinking. We play first, document second, and never let "coding" outrank "laughing". Son's nickname in public: 小鱼 (Little Fish).*
+*English: A 15-year father-son journey in computational thinking. We play first, document second, and never let "coding" outrank "laughing". Son's nickname in public: 小宥宥.*
