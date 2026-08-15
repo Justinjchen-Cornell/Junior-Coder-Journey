@@ -1,0 +1,17 @@
+# Obsidian
+.obsidian/
+.obsidian-workspace.json
+
+# 系统
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# 隐私（本地照片原图绝不入库）
+*.heic
+*.HEIC

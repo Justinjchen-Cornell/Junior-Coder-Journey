@@ -1,0 +1,53 @@
+name: Weekly Reminder
+
+# 防死机制：每周一 09:00（北京时间 = 01:00 UTC）自动开一个 Issue 提醒记录
+# 断更 4 周是允许的，但绝不能"忘记"——这个 Action 负责永不忘记。
+on:
+  schedule:
+    - cron: "0 1 * * 1"   # 周一 09:00 北京时间
+  workflow_dispatch:       # 手动触发兜底
+
+permissions:
+  issues: write
+
+jobs:
+  remind:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 计算本周信息
+        id: week
+        run: |
+          echo "week=$(date -d 'last monday' +%G-W%V 2>/dev/null || date +%G-W%V)" >> "$GITHUB_OUTPUT"
+          echo "monday=$(date +%m-%d)" >> "$GITHUB_OUTPUT"
+
+      - name: 打开记录提醒 Issue
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { week, monday } = process.env;
+            const body = `## 📝 本周记录：${week}（${monday} 起）
+
+          上周玩了什么？按照 **≤15 分钟** 原则填写：
+
+          \`\`\`
+          ## 玩了什么
+          ## 孩子的反应（亮点/卡点/语录）
+          ## 我的观察（一句话）
+          ## 下周调整
+          ## 开心指数 ⭐⭐⭐☆☆
+          \`\`\`
+
+          **规则提醒：**
+          - 允许断更，不补、不内疚
+          - 陪伴优先：若本周陪伴 <10 分钟，记录留白
+          - 完成后 commit 并 close 本 Issue：\`git commit -m "episode: ${week}"\`
+          `;
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `📝 记录：${week}`,
+              body: body,
+            });
+        env:
+          week: ${{ steps.week.outputs.week }}
+          monday: ${{ steps.week.outputs.monday }}
