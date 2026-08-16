@@ -25,7 +25,7 @@ const URL = 'file:///' + path.resolve(__dirname, '..', 'index.html').split(path.
     await page.click('#btn-open');
   }
   check('宝宝拆到底（基线空盒）', await page.$eval('#hint', el => el.textContent.includes('基线')));
-  check('嵌套盒视觉出现', await page.$('.inner-box.base') !== null);
+  check('俄罗斯套娃视觉出现', await page.$('.doll-shape.base') !== null);
   await page.waitForSelector('[data-ans]', { timeout: 20000 });
   const opts = await page.$$eval('[data-ans]', els => els.map(e => Number(e.dataset.ans)));
   await page.click('[data-ans="' + opts[1] + '"]');   // 中间 = 正确答案（n-1, n, n+1）

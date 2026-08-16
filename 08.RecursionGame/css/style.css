@@ -45,43 +45,56 @@ body {
 .hint { font-size: 1.1rem; font-weight: 700; }
 .status-line { display: flex; gap: 10px; align-items: center; margin-top: 4px; font-size: .9rem; flex-wrap: wrap; }
 
-/* ---------- 嵌套盒视觉 ---------- */
+/* ---------- 俄罗斯套娃视觉 ---------- */
 .nest-zone {
-  min-height: 320px; position: relative;
+  min-height: 330px; position: relative;
   display: flex; align-items: center; justify-content: center;
   margin: 10px 0;
 }
-.box-wrap { position: relative; width: 240px; height: 240px; display: flex; align-items: center; justify-content: center; }
-.box {
-  position: absolute; border-radius: 18px;
-  border: 4px solid var(--choco);
+.doll-shape {
+  position: absolute; border-radius: 50% 50% 46% 46% / 58% 58% 42% 42%;
+  border: 3px solid #8a5a2b;
   display: flex; align-items: center; justify-content: center;
-  box-shadow: 0 4px 12px rgba(0,0,0,.18);
+  box-shadow: inset 0 -10px 14px rgba(0,0,0,.12), 0 5px 14px rgba(0,0,0,.2);
+  transition: transform .3s ease;
 }
-.box1 { width: 230px; height: 230px; background: linear-gradient(160deg, #ff9d6c, #ff7043); z-index: 4; }
-.box2 { width: 170px; height: 170px; background: linear-gradient(160deg, #ffb74d, #ff9800); z-index: 3; }
-.box3 { width: 110px; height: 110px; background: linear-gradient(160deg, #ffd54f, #ffc107); z-index: 2; }
-.box-face { font-size: 4rem; z-index: 1; }
-.ring {
-  position: absolute; border-radius: 50%; border: 4px dashed rgba(107,74,43,.35);
-  animation: ring-pulse 2s ease infinite;
+/* 未拆开的完整娃娃：上脸下裙 */
+.doll-shape.solid {
+  background: linear-gradient(180deg,
+    #ffe0c0 0%, #ffd9b3 38%,
+    #ff8a50 39%, #ff7043 78%,
+    #ffb74d 100%);
 }
-.ring1 { width: 140px; height: 140px; }
-.ring2 { width: 95px; height: 95px; }
-.ring3 { width: 60px; height: 60px; }
-@keyframes ring-pulse { 0%,100% { transform: scale(1); opacity: .6; } 50% { transform: scale(1.08); opacity: 1; } }
-.inner-box {
-  position: absolute; border-radius: 16px; z-index: 5;
-  width: 120px; height: 120px; background: linear-gradient(160deg, #fff8e7, #ffe3b3);
-  border: 4px solid var(--choco);
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  box-shadow: 0 4px 14px rgba(0,0,0,.22);
+.doll-shape.solid .doll-face { position: absolute; top: 8%; }
+.doll-flower { position: absolute; bottom: 10%; }
+.doll-seam {
+  position: absolute; top: 38%; left: 5%; right: 5%;
+  border-top: 3px dashed rgba(107,74,43,.55);
 }
-.inner-face { font-size: 3.2rem; }
-.inner-box.base { background: radial-gradient(circle, #fff 30%, #e8f7e8); border-color: var(--green); }
-.layer-tag {
-  background: #fff; border: 3px solid var(--gold); border-radius: 14px;
-  font-size: 1rem; font-weight: 800; padding: 1px 10px; margin-top: 4px;
+.doll-tag {
+  position: absolute; bottom: -22px; background: #fff;
+  border: 3px solid #ffd54f; border-radius: 14px;
+  font-size: .9rem; font-weight: 800; padding: 1px 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,.15);
+  white-space: nowrap;
+}
+/* 已打开的壳：浅色 + 空心感 */
+.doll-shape.shell {
+  background: linear-gradient(180deg, #f7ead8 0%, #f0ddc4 100%);
+  opacity: .85;
+}
+.doll-shape.shell::after {
+  content: ''; position: absolute; left: 16%; right: 16%; top: 14%; bottom: 34%;
+  border-radius: 50% 50% 46% 46% / 58% 58% 42% 42%;
+  background: radial-gradient(ellipse at 50% 35%, rgba(138,106,74,.35), rgba(138,106,74,.08) 70%);
+}
+/* 基线空娃娃 */
+.doll-shape.base { background: radial-gradient(circle, #fff 40%, #e8f7e8 100%); }
+.doll-base-mark { font-size: 1.1rem; animation: base-glow 1s ease infinite alternate; }
+@keyframes base-glow { from { opacity: .5; transform: scale(.85); } to { opacity: 1; transform: scale(1.15); } }
+.nest-caption {
+  position: absolute; bottom: -6px; width: 100%; text-align: center;
+  font-size: .95rem; font-weight: 700; color: #8a6a3f;
 }
 .reveal { animation: open-pop .45s ease; }
 @keyframes open-pop {

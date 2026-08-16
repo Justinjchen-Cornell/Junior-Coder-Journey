@@ -76,43 +76,65 @@
     document.getElementById(id).classList.add('active');
   }
 
-  // ---------- 嵌套盒视觉 ----------
-  function renderOuter() {
-    // 最外层大盒（尚未拆开：看不到里面的）
-    const zone = document.getElementById('nest-zone');
-    zone.innerHTML =
-      '<div class="box-wrap reveal">' +
-      '<div class="box box1"><div class="box-face">🎁</div><div class="box-lid"></div></div>' +
+  // ---------- 俄罗斯套娃视觉 ----------
+  const FACES = ['😊', '😄', '🥰', '😜', '😎', '🤩', '😌', '😋', '🤗', '😝'];
+  const FLOWERS = ['🌺', '🌸', '🌼', '🌷'];
+  const DOLL_BASE = 210;          // 最外层娃娃宽度
+  const SHRINK = 0.76;            // 每层缩小比例
+
+  function dollHtml(size, face, opts) {
+    // opts: { solid: true/false, flower: '🌺', seam: true, tag: '+3', isBase: false }
+    opts = opts || {};
+    return '<div class="doll-shape ' + (opts.solid ? 'solid' : 'shell') +
+      (opts.isBase ? ' base' : '') + '" style="width:' + size + 'px;height:' + (size * 1.18) + 'px">' +
+      '<span class="doll-face" style="font-size:' + (size * 0.26) + 'px">' + face + '</span>' +
+      (opts.flower ? '<span class="doll-flower" style="font-size:' + (size * 0.2) + 'px">' + opts.flower + '</span>' : '') +
+      (opts.solid && opts.seam ? '<div class="doll-seam"></div>' : '') +
+      (opts.tag ? '<span class="doll-tag">' + opts.tag + '</span>' : '') +
+      (opts.isBase ? '<span class="doll-base-mark">✨</span>' : '') +
       '</div>';
   }
 
-  function renderNested(opened, myValue, surprise) {
-    // 拆开第 opened 层：显示"盒子里还有更小的盒子"的嵌套视觉
+  function renderOuter() {
+    // 最外层：完整未拆的娃娃
     const zone = document.getElementById('nest-zone');
-    let inner = '';
-    for (let i = 0; i < opened; i++) inner += '<div class="ring ring' + ((i % 3) + 1) + '"></div>';
-    zone.innerHTML =
-      '<div class="box-wrap">' +
-      '<div class="box box1"><div class="box-face">🎁</div></div>' +
-      '<div class="box box2"><div class="box-face">🎁</div></div>' +
-      inner +
-      '<div class="inner-box reveal">' +
-      '<div class="inner-face">' + (surprise ? surprise : '🪆') + '</div>' +
-      '<div class="layer-tag">+ ' + myValue + '</div>' +
-      '</div>' +
-      '</div>';
+    zone.innerHTML = dollHtml(DOLL_BASE, FACES[0], { solid: true, flower: FLOWERS[0], seam: true }) +
+      '<div class="nest-caption">🎁 礼物塔的最外层</div>';
+  }
+
+  function renderNested(opened, myValue, surprise) {
+    // 已打开的层 = 空壳（从外到内变小）；最里面 = 当前未拆的娃娃（嵌套可见！）
+    const zone = document.getElementById('nest-zone');
+    let html = '';
+    for (let k = 1; k <= opened; k++) {
+      const size = DOLL_BASE * Math.pow(SHRINK, k);
+      // 越靠外的壳越淡（深度感）
+      html += dollHtml(size, FACES[k % FACES.length], {
+        solid: false, flower: FLOWERS[k % FLOWERS.length],
+        style: 'opacity:' + (0.9 - k * 0.12),
+      });
+    }
+    const cur = DOLL_BASE * Math.pow(SHRINK, opened);
+    html += dollHtml(cur, surprise || FACES[opened % FACES.length], {
+      solid: true, flower: FLOWERS[opened % FLOWERS.length], seam: true, tag: '+ ' + myValue,
+    });
+    html += '<div class="nest-caption">第 ' + opened + ' 层 · 里面还有更小的娃娃…</div>';
+    zone.innerHTML = html;
     if (surprise) playSound('pop');
   }
 
   function renderEmpty() {
-    // 空盒（基线）：最小最里面——什么也没有
+    // 拆到底：最小的空娃娃（基线）
     const zone = document.getElementById('nest-zone');
-    zone.innerHTML =
-      '<div class="box-wrap">' +
-      '<div class="box box1"></div><div class="box box2"></div><div class="box box3"></div>' +
-      '<div class="inner-box base reveal"><div class="inner-face">✨</div>' +
-      '<div class="layer-tag">空的！返回 0</div></div>' +
-      '</div>';
+    let html = '';
+    const n = state.game.layers;
+    for (let k = 1; k <= n; k++) {
+      const size = DOLL_BASE * Math.pow(SHRINK, k);
+      html += dollHtml(size, FACES[k % FACES.length], {});
+    }
+    html += dollHtml(DOLL_BASE * Math.pow(SHRINK, n + 1), '😴', { isBase: true, tag: '空的 · 返回 0' });
+    html += '<div class="nest-caption">✨ 最小的娃娃里面什么也没有 —— 基线！</div>';
+    zone.innerHTML = html;
   }
 
   // ---------- 拆（递归下降） ----------
