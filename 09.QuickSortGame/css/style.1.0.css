@@ -1,0 +1,114 @@
+/* 书架整理员 · 卡通风格 */
+:root { --cream: #fff6e5; --pink: #ff8fb3; --gold: #ffd54f; --choco: #6b4a2b; --ink: #3a2e1f; --green: #6ec96e; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  font-family: "PingFang SC", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+  background: linear-gradient(180deg, #ffe3b3 0%, var(--cream) 60%, #b8e6b8 100%);
+  color: var(--ink); user-select: none; -webkit-tap-highlight-color: transparent;
+  overflow-x: hidden;
+}
+#app { max-width: 760px; margin: 0 auto; padding: 12px; min-height: 100vh; }
+.screen { display: none; }
+.screen.active { display: block; }
+.title { text-align: center; font-size: 2rem; margin: 18px 0 4px; text-shadow: 2px 2px 0 rgba(255,255,255,.6); }
+.subtitle { text-align: center; font-size: 1.02rem; margin-bottom: 14px; color: #8a6a3f; }
+.animal-picker { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin: 16px 0; }
+.animal-picker button {
+  font-size: 2.4rem; width: 84px; height: 84px; border-radius: 50%;
+  border: 4px solid var(--choco); background: #fff; cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0,0,0,.18); transition: transform .15s;
+}
+.animal-picker button:active { transform: scale(.9); }
+.mode-picker { display: flex; gap: 14px; justify-content: center; margin-top: 20px; }
+.mode-btn {
+  font-size: 1.15rem; padding: 16px 22px; border-radius: 20px;
+  border: 4px solid var(--choco); cursor: pointer; background: #fff;
+  box-shadow: 0 4px 8px rgba(0,0,0,.18);
+}
+.mode-btn small { display: block; font-size: .8rem; color: #8a7a5f; margin-top: 4px; }
+.mode-btn.baby { border-color: var(--pink); }
+.mode-btn.challenge { border-color: #5c9cff; }
+
+.game-header { display: flex; align-items: center; gap: 12px; margin: 8px 0; }
+.animal-face { font-size: 2.4rem; background: #fff; border-radius: 50%; width: 62px; height: 62px;
+  display: flex; align-items: center; justify-content: center; border: 4px solid var(--choco); }
+.header-info { flex: 1; }
+.hint { font-size: 1.05rem; font-weight: 700; }
+.status-line { display: flex; gap: 10px; align-items: center; margin-top: 4px; font-size: .9rem; flex-wrap: wrap; }
+.rounds { color: #5c9cff; font-weight: 700; }
+
+/* 书架 */
+.shelf-zone { background: rgba(255,255,255,.8); border-radius: 16px; padding: 10px; margin: 6px 0; border: 3px solid #b08968; }
+.shelf-label { font-size: .85rem; font-weight: 700; color: #8a6a4f; margin-bottom: 6px; }
+.shelf { display: flex; gap: 4px; align-items: flex-end; min-height: 70px; border-bottom: 4px solid #b08968; padding: 0 4px; }
+.slot { flex: 1; height: 66px; display: flex; align-items: flex-end; justify-content: center; }
+.slot .sbook { animation: slot-pop .4s ease; }
+@keyframes slot-pop { 0% { transform: translateY(-30px) scale(.3); opacity: 0; } 70% { transform: translateY(4px) scale(1.15); } 100% { transform: translateY(0) scale(1); } }
+
+/* 书（高度 = 数值！） */
+.book {
+  display: inline-flex; flex-direction: column; align-items: center; justify-content: flex-end;
+  border-radius: 6px 6px 2px 2px; border: 2px solid var(--choco);
+  background: linear-gradient(180deg, #fff8e7, #ffe3b3);
+  box-shadow: 0 3px 6px rgba(0,0,0,.15); cursor: pointer;
+  transition: transform .12s; position: relative;
+}
+.book:active { transform: scale(.94); }
+.book .b-animal { font-size: .95rem; }
+.book .b-num { font-size: .8rem; font-weight: 800; }
+.sbook { width: 30px; }
+
+/* 书堆（当前待分） */
+.book-pile { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; align-items: flex-end; min-height: 110px; margin: 8px 0; }
+.book-pile .book { height: var(--h); padding: 2px 4px; }
+.book.pickable { animation: bob 1.2s ease infinite; }
+@keyframes bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+
+/* 标杆 */
+.pivot-zone { text-align: center; min-height: 90px; margin: 4px 0; }
+.pivot-zone .book { height: 70px; padding: 2px 8px; border-color: var(--gold); box-shadow: 0 0 18px rgba(255,213,79,.9); }
+.pivot-label { font-size: .85rem; font-weight: 700; color: #b8860b; }
+
+/* 当前待分书（大号） */
+.pending-zone { text-align: center; min-height: 120px; margin: 6px 0; }
+.pending-zone .book { height: 110px; padding: 4px 10px; animation: reveal-pop .4s ease; }
+.pending-zone .book .b-animal { font-size: 1.8rem; }
+.pending-zone .book .b-num { font-size: 1.4rem; }
+@keyframes reveal-pop { 0% { transform: scale(.3) rotate(-8deg); opacity: 0; } 100% { transform: scale(1) rotate(0); opacity: 1; } }
+
+/* 分堆按钮 */
+.classify-zone { display: flex; gap: 16px; justify-content: center; margin: 10px 0; }
+.side-btn {
+  font-size: 1.15rem; font-weight: 800; padding: 18px 30px; border-radius: 20px;
+  border: 4px solid var(--choco); cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,.18);
+  transition: transform .12s; line-height: 1.5;
+}
+.side-btn.small { background: #b8e6b8; }
+.side-btn.big { background: #ffd9b3; }
+.side-btn:active { transform: scale(.93); }
+.side-btn small { display: block; font-size: .78rem; color: #5a4a35; }
+
+.feedback { text-align: center; font-size: 1.3rem; font-weight: 800; min-height: 2rem; margin: 6px 0; }
+.feedback.ok { color: #2e7d32; }
+.feedback.no { color: #d32f2f; }
+
+.btn-reset, .btn-home {
+  display: block; margin: 8px auto; padding: 12px 24px; font-size: 1.02rem;
+  border-radius: 18px; border: 3px solid var(--choco); cursor: pointer;
+  background: #fff; box-shadow: 0 4px 8px rgba(0,0,0,.18);
+}
+.btn-home { background: #ffe9d6; }
+
+.stats-title { text-align: center; margin: 20px 0 10px; }
+.stats-box { background: rgba(255,255,255,.85); border-radius: 18px; padding: 16px; margin: 12px 0; font-size: 1.02rem; line-height: 1.9; }
+.stats-box .big { font-size: 1.35rem; font-weight: 800; }
+
+@keyframes celebrate-pop { 0% { transform: scale(0) rotate(-20deg); } 70% { transform: scale(1.4) rotate(10deg); } 100% { transform: scale(1) rotate(0); } }
+.celebrate { animation: celebrate-pop .6s ease; display: inline-block; }
+
+@media (max-width: 480px) {
+  .animal-picker button { width: 64px; height: 64px; font-size: 1.9rem; }
+  .side-btn { padding: 14px 18px; font-size: 1rem; }
+  .title { font-size: 1.5rem; }
+}
