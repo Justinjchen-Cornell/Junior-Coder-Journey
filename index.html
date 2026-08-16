@@ -25,6 +25,17 @@
     box-shadow: 0 4px 10px rgba(0,0,0,.12);
   }
   .hero .badge span { animation: blink 1.2s ease infinite; }
+  .knight {
+    display: inline-block; margin-top: 8px; background: #fffbe6;
+    border: 3px solid #ffd54f; border-radius: 24px; padding: 5px 18px;
+    font-size: .95rem; font-weight: 900; color: #b8860b;
+  }
+  .medal {
+    position: absolute; top: -6px; right: -4px; font-size: 1.2rem;
+    animation: medal-pop .4s ease;
+  }
+  @keyframes medal-pop { 0% { transform: scale(0) rotate(-30deg); } 70% { transform: scale(1.4); } 100% { transform: scale(1); } }
+  .card[data-game] .sticker { position: relative; }
   @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: .35; } }
   .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 18px; margin-top: 28px; }
   .card {
@@ -93,11 +104,12 @@
     <h1>🎡 小动物森林 · 算法游乐场</h1>
     <p>小宥宥的思维训练乐园 —— 10 个游戏全部上线！玩着玩着，就学会了</p>
     <div class="badge">🧸 爸爸和小宥宥一起玩 <span>●</span></div>
+    <div class="knight" id="knight-progress">🏅 已点亮 0/10 个徽章</div>
   </div>
 
   <div class="grid" id="game-grid">
     <!-- 已上线 -->
-    <a class="card" style="--c:#ff8a50;--bg:#ffe9d9" href="06.BinarySearchGame/">
+    <a class="card" style="--c:#ff8a50;--bg:#ffe9d9" data-game="06" href="06.BinarySearchGame/">
       <span class="new-tag">⭐ 第 1 个</span>
       <div class="sticker">🐿️</div>
       <h3>猜猜小动物在哪里</h3>
@@ -106,7 +118,7 @@
       <span class="play-btn">开始玩 ▶</span>
     </a>
 
-    <a class="card" style="--c:#ff8fb3;--bg:#ffe4ec" href="07.SelectionSortGame/">
+    <a class="card" style="--c:#ff8fb3;--bg:#ffe4ec" data-game="07" href="07.SelectionSortGame/">
       <span class="new-tag">⭐ 第 2 个</span>
       <div class="sticker">🍦</div>
       <h3>排队买冰淇淋</h3>
@@ -115,7 +127,7 @@
       <span class="play-btn">开始玩 ▶</span>
     </a>
 
-    <a class="card" style="--c:#9b7bff;--bg:#efe9ff" href="08.RecursionGame/">
+    <a class="card" style="--c:#9b7bff;--bg:#efe9ff" data-game="08" href="08.RecursionGame/">
       <span class="new-tag">🆕 最新</span>
       <div class="sticker">🪆</div>
       <h3>套娃拆拆乐</h3>
@@ -124,7 +136,7 @@
       <span class="play-btn">开始玩 ▶</span>
     </a>
 
-    <a class="card" style="--c:#7cb342;--bg:#e8f5d9" href="09.QuickSortGame/">
+    <a class="card" style="--c:#7cb342;--bg:#e8f5d9" data-game="09" href="09.QuickSortGame/">
       <span class="new-tag">🆕 第 4 个</span>
       <div class="sticker">📚</div>
       <h3>书架整理员</h3>
@@ -135,7 +147,7 @@
 
     <!-- 敬请期待 -->
 
-    <a class="card" style="--c:#5c9cff;--bg:#e3efff" href="10.HashTableGame/">
+    <a class="card" style="--c:#5c9cff;--bg:#e3efff" data-game="10" href="10.HashTableGame/">
       <span class="new-tag">🆕 第 5 个</span>
       <div class="sticker">🔐</div>
       <h3>小动物储物柜</h3>
@@ -144,7 +156,7 @@
       <span class="play-btn">开始玩 ▶</span>
     </a>
 
-    <a class="card" style="--c:#26a69a;--bg:#d9f2ef" href="11.BFSGame/">
+    <a class="card" style="--c:#26a69a;--bg:#d9f2ef" data-game="11" href="11.BFSGame/">
       <span class="new-tag">🆕 第 6 个</span>
       <div class="sticker">🐒</div>
       <h3>小猴子找朋友</h3>
@@ -153,7 +165,7 @@
       <span class="play-btn">开始玩 ▶</span>
     </a>
 
-    <a class="card" style="--c:#ff8a50;--bg:#ffe9d9" href="12.DijkstraGame/">
+    <a class="card" style="--c:#ff8a50;--bg:#ffe9d9" data-game="12" href="12.DijkstraGame/">
       <span class="new-tag">🆕 第 7 个</span>
       <div class="sticker">🐜</div>
       <h3>蚂蚁找食物</h3>
@@ -162,7 +174,7 @@
       <span class="play-btn">开始玩 ▶</span>
     </a>
 
-    <a class="card" style="--c:#e5484d;--bg:#ffe9e9" href="13.TowerGame/">
+    <a class="card" style="--c:#e5484d;--bg:#ffe9e9" data-game="13" href="13.TowerGame/">
       <span class="new-tag">🆕 第 8 个</span>
       <div class="sticker">📡</div>
       <h3>盖广播塔</h3>
@@ -171,7 +183,7 @@
       <span class="play-btn">开始玩 ▶</span>
     </a>
 
-    <a class="card" style="--c:#7cb342;--bg:#e8f5d9" href="14.DPGame/">
+    <a class="card" style="--c:#7cb342;--bg:#e8f5d9" data-game="14" href="14.DPGame/">
       <span class="new-tag">🆕 第 9 个</span>
       <div class="sticker">🐿️</div>
       <h3>小松鼠装松果</h3>
@@ -180,7 +192,7 @@
       <span class="play-btn">开始玩 ▶</span>
     </a>
 
-    <a class="card" style="--c:#9b7bff;--bg:#efe9ff" href="15.KNNGame/">
+    <a class="card" style="--c:#9b7bff;--bg:#efe9ff" data-game="15" href="15.KNNGame/">
       <span class="new-tag">🆕 第 10 个</span>
       <div class="sticker">🔮</div>
       <h3>猜猜它是谁</h3>
@@ -190,6 +202,31 @@
     </a>
   </div>
 
+  <script>
+    // 🏅 算法徽章：3 星通关的游戏自动点亮（本地记录）
+    (function () {
+      var keys = ['06','07','08','09','10','11','12','13','14','15'];
+      var lit = 0;
+      keys.forEach(function (n) {
+        if (localStorage.getItem('forest-badge-' + n)) {
+          lit++;
+          var card = document.querySelector('[data-game="' + n + '"]');
+          if (card) {
+            var b = document.createElement('span');
+            b.className = 'medal';
+            b.textContent = '🏅';
+            card.querySelector('.sticker').appendChild(b);
+            var tag = card.querySelector('.new-tag');
+            if (tag) tag.textContent = '🏅 已通关';
+          }
+        }
+      });
+      var prog = document.getElementById('knight-progress');
+      if (prog) {
+        prog.textContent = '🏅 已点亮 ' + lit + '/10 个徽章' + (lit === 10 ? ' —— 算法骑士！🎉' : '');
+      }
+    })();
+  </script>
   <div class="footer">
     <div>🐾 每一关都是爸爸亲手做的 —— 先玩到，再懂它</div>
     <div class="journey">🧸 爸爸 × 小宥宥 · 15 年编程之约 · 第 1 年进行中 💙</div>

@@ -122,6 +122,8 @@
   }
 
   function onWin(steps) {
+    const lt = document.getElementById('life-task');
+    if (lt) lt.textContent = '🏠 回家试试：和爸爸妈妈玩「猜价格」：心里想个价格，他们猜，你说大了/小了！';
     document.getElementById('stars').textContent = '⭐'.repeat(starsFor(steps));
 
     // ===== 奖励评价 =====
@@ -149,6 +151,7 @@
   }
 
   function showRecord(steps) {
+    if (starsFor(steps) === 3) localStorage.setItem('forest-badge-06', '1');
     const el = document.getElementById('record');
     const key = recordKey();
     const prev = Number(localStorage.getItem(key) || 0);

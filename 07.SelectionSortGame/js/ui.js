@@ -155,7 +155,7 @@
       if (state.game.isDone) onWin();
     } else {
       playSound('wrong');
-      setFeedback('再看看，还有更矮的哦～', 'no');
+      setFeedback('再看看，还有更矮的哦～ 想一想：剩下的牌里谁最矮？', 'no');
     }
   }
 
@@ -188,6 +188,8 @@
 
   function showStatsPage(stats) {
     showScreen('screen-stats');
+    const lt = document.getElementById('life-task');
+    if (lt) lt.textContent = '🏠 回家试试：把家里的书/玩具按大小排排队，数数你看了几遍！';
     const theo = stats.theoretical;
     const stars = stats.stars;
     document.getElementById('stats-title').textContent = '排好啦！' + '⭐'.repeat(stars);
@@ -211,6 +213,7 @@
   function recordKey() { return 'ssq-best-' + state.mode + '-' + state.animal; }
 
   function showRecord(stars, score) {
+    if (stars === 3) localStorage.setItem('forest-badge-07', '1');
     const el = document.getElementById('record');
     const key = recordKey();
     const prev = Number(localStorage.getItem(key) || 0);

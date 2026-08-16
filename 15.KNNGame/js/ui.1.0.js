@@ -186,6 +186,8 @@
 
   function showStatsPage(s) {
     showScreen('screen-stats');
+    const lt = document.getElementById('life-task');
+    if (lt) lt.textContent = '🏠 回家试试：猜猜新同学喜欢玩什么——看他最常和谁玩！';
     document.getElementById('stats-title').textContent = '猜完啦！' + '⭐'.repeat(s.stars);
     // ===== 奖励评价 =====
     const rewardEl = document.getElementById('stats-reward');
@@ -234,6 +236,7 @@
   function recordKey() { return 'knn-best-l' + state.level; }
 
   function showRecord(stars, err) {
+    if (stars === 3) localStorage.setItem('forest-badge-15', '1');
     const el = document.getElementById('record');
     const key = recordKey();
     const prev = Number(localStorage.getItem(key) || 0);

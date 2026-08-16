@@ -123,7 +123,7 @@
         basket.classList.remove('overload');
         void basket.offsetWidth;
         basket.classList.add('overload');
-        setFeedback('篮子装不下啦！先取出一些吧～', 'no');
+        setFeedback('篮子装不下啦！想一想：取出哪个，能再放进什么？', 'no');
       }
     }
     renderItems();
@@ -168,6 +168,8 @@
   // ---------- 结算 ----------
   function showStatsPage(s) {
     showScreen('screen-stats');
+    const lt = document.getElementById('life-task');
+    if (lt) lt.textContent = '🏠 回家试试：超市 5 块钱买零食，怎么买最划算？';
     const isOpt = s.totalV === s.optimalV;
     document.getElementById('stats-title').textContent = '装好啦！' + '⭐'.repeat(s.stars);
     // ===== 奖励评价 =====
@@ -220,6 +222,7 @@
   function recordKey() { return 'acorn-best-l' + state.level; }
 
   function showRecord(stars, v) {
+    if (stars === 3) localStorage.setItem('forest-badge-14', '1');
     const el = document.getElementById('record');
     const key = recordKey();
     const prev = Number(localStorage.getItem(key) || 0);

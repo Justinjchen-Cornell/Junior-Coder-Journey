@@ -163,7 +163,7 @@
       }
     } else {
       playSound('wrong');
-      setFeedback('再看看？这本书' + (r.correctSide === 'small' ? '更小' : '更大') + '，应该放' +
+      setFeedback('想一想：这本书和标杆比' + (r.correctSide === 'small' ? '更小' : '更大') + '，应该放' +
         (r.correctSide === 'small' ? '左边' : '右边'), 'no');
     }
     updateStatus();
@@ -213,6 +213,8 @@
 
   function showStatsPage(stats) {
     showScreen('screen-stats');
+    const lt = document.getElementById('life-task');
+    if (lt) lt.textContent = '🏠 回家试试：整理书架试试「分两堆再分两堆」！';
     document.getElementById('stats-title').textContent = '书架排好啦！' + '⭐'.repeat(stats.stars);
 
     // ===== 奖励评价 =====
@@ -241,6 +243,7 @@
   function recordKey() { return 'book-best-' + state.mode + '-' + state.animal; }
 
   function showRecord(stars, score) {
+    if (stars === 3) localStorage.setItem('forest-badge-09', '1');
     const el = document.getElementById('record');
     const key = recordKey();
     const prev = Number(localStorage.getItem(key) || 0);

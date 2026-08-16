@@ -197,7 +197,7 @@
     document.querySelectorAll('[data-ans]').forEach(btn => {
       btn.addEventListener('click', () => {
         if (state.game.answer(Number(btn.dataset.ans))) { playSound('win'); onWin(); }
-        else { playSound('wrong'); setFeedback('再数数看？', 'no'); }
+        else { playSound('wrong'); setFeedback('再数数看？想一想：最小的盒子是几层？', 'no'); }
       });
     });
   }
@@ -251,6 +251,8 @@
 
   function showStatsPage(stats) {
     showScreen('screen-stats');
+    const lt = document.getElementById('life-task');
+    if (lt) lt.textContent = '🏠 回家试试：打开家里的收纳盒/文件夹，数数套了几层！';
     document.getElementById('stats-title').textContent = '拆完啦！' + '⭐'.repeat(stats.stars);
 
     // ===== 奖励评价 =====
@@ -274,6 +276,7 @@
   function recordKey() { return 'nest-best-' + state.mode + '-' + state.animal; }
 
   function showRecord(stars, score) {
+    if (stars === 3) localStorage.setItem('forest-badge-08', '1');
     const el = document.getElementById('record');
     const key = recordKey();
     const prev = Number(localStorage.getItem(key) || 0);

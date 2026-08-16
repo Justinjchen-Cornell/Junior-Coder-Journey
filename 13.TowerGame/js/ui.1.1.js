@@ -170,6 +170,8 @@
 
   function showStatsPage(s) {
     showScreen('screen-stats');
+    const lt = document.getElementById('life-task');
+    if (lt) lt.textContent = '🏠 回家试试：帮爸爸装水果：几个袋子装完所有水果，最少几个？';
     const isOpt = s.towersUsed === s.optimalCount;
     document.getElementById('stats-title').textContent = '信号全覆盖！' + '⭐'.repeat(s.stars);
     // ===== 奖励评价 =====
@@ -230,6 +232,7 @@
   function recordKey() { return 'tower-best-l' + state.level; }
 
   function showRecord(stars, towersUsed) {
+    if (stars === 3) localStorage.setItem('forest-badge-13', '1');
     const el = document.getElementById('record');
     const key = recordKey();
     const prev = Number(localStorage.getItem(key) || 0);

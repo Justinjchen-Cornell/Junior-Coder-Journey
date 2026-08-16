@@ -194,7 +194,7 @@
       });
     } else {
       playSound('wrong');
-      setFeedback('不是这个柜子哦，再看看号码表？', 'no');
+      setFeedback('不是这个柜子哦，想一想：号码表上它写的是几号柜？', 'no');
     }
   }
 
@@ -227,6 +227,8 @@
 
   function showStatsPage(stats) {
     showScreen('screen-stats');
+    const lt = document.getElementById('life-task');
+    if (lt) lt.textContent = '🏠 回家试试：给家里的遥控器/水杯贴号码，做个号码表！';
     document.getElementById('stats-title').textContent = '全部取到啦！' + '⭐'.repeat(stats.stars);
 
     // ===== 奖励评价 =====
@@ -260,6 +262,7 @@
   function recordKey() { return 'locker-best-' + state.mode + '-' + state.animal; }
 
   function showRecord(stars, score) {
+    if (stars === 3) localStorage.setItem('forest-badge-10', '1');
     const el = document.getElementById('record');
     const key = recordKey();
     const prev = Number(localStorage.getItem(key) || 0);

@@ -171,3 +171,16 @@ body {
   70% { transform: scale(1.15); }
   100% { transform: scale(1); opacity: 1; }
 }
+
+/* 家长折叠区 + 生活任务 */
+.dad-note {
+  max-width: 600px; margin: 8px auto; background: #fff8e7;
+  border: 3px dashed #b08968; border-radius: 14px; padding: 8px 14px;
+}
+.dad-note summary { font-weight: 900; color: #8a6a4f; cursor: pointer; font-size: .98rem; }
+.dad-text { font-size: .92rem; color: #5a4a35; line-height: 1.7; margin: 4px 0; }
+.life-task {
+  text-align: center; font-size: 1rem; font-weight: 900; color: #2e7d32;
+  background: #e8f5e9; border: 2px solid #6ec96e; border-radius: 12px;
+  padding: 8px 12px; margin: 8px auto; max-width: 600px;
+}
