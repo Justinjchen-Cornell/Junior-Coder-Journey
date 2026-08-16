@@ -130,6 +130,27 @@
     document.getElementById('animal-face').classList.add('celebrate');
     setTimeout(() => document.getElementById('animal-face').classList.remove('celebrate'), 700);
     playSound('win');
+    showRecord(steps);
+  }
+
+  // ---------- 纪录（localStorage，隐私友好：只存本机） ----------
+  function recordKey() {
+    return 'bsg-best-' + state.mode + '-' + state.animal;
+  }
+
+  function showRecord(steps) {
+    const el = document.getElementById('record');
+    const key = recordKey();
+    const prev = Number(localStorage.getItem(key) || 0);
+    if (prev === 0 || steps < prev) {
+      localStorage.setItem(key, String(steps));
+      el.textContent = '🏆 新纪录！' + steps + ' 步';
+      el.style.color = '#ff7043';
+      playSound('win');
+    } else {
+      el.textContent = '最佳纪录 ' + prev + ' 步';
+      el.style.color = '#8a7a5f';
+    }
   }
 
   function starsFor(steps) {
@@ -145,6 +166,7 @@
     updateHeader('小宥宥，猜猜我躲在哪？', '');
     document.getElementById('feedback').textContent = '';
     document.getElementById('feedback').className = 'feedback';
+    document.getElementById('record').textContent = '';
   }
 
   function updateHeader(hint, stars) {
