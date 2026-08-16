@@ -1,0 +1,114 @@
+/* 小猴子找朋友 · 森林风格 */
+:root { --cream: #fff6e5; --pink: #ff8fb3; --gold: #ffd54f; --choco: #6b4a2b; --ink: #3a2e1f; --green: #6ec96e; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  font-family: "PingFang SC", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+  background: linear-gradient(180deg, #aee3ff 0%, #e8f7e8 60%, #b8e6b8 100%);
+  color: var(--ink); user-select: none; -webkit-tap-highlight-color: transparent;
+  overflow-x: hidden;
+}
+#app { max-width: 800px; margin: 0 auto; padding: 12px; min-height: 100vh; }
+.screen { display: none; }
+.screen.active { display: block; }
+.title { text-align: center; font-size: 2rem; margin: 18px 0 4px; text-shadow: 2px 2px 0 rgba(255,255,255,.6); }
+.subtitle { text-align: center; font-size: 1.02rem; margin-bottom: 14px; color: #3a6b3a; }
+.animal-picker { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin: 16px 0; }
+.animal-picker button {
+  font-size: 2.4rem; width: 84px; height: 84px; border-radius: 50%;
+  border: 4px solid var(--choco); background: #fff; cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0,0,0,.18); transition: transform .15s;
+}
+.animal-picker button:active { transform: scale(.9); }
+.mode-picker { display: flex; gap: 14px; justify-content: center; margin-top: 20px; }
+.mode-btn {
+  font-size: 1.15rem; padding: 16px 22px; border-radius: 20px;
+  border: 4px solid var(--choco); cursor: pointer; background: #fff;
+  box-shadow: 0 4px 8px rgba(0,0,0,.18);
+}
+.mode-btn small { display: block; font-size: .8rem; color: #5a6a4f; margin-top: 4px; }
+.mode-btn.baby { border-color: var(--pink); }
+.mode-btn.challenge { border-color: #5c9cff; }
+
+.game-header { display: flex; align-items: center; gap: 12px; margin: 8px 0; }
+.animal-face { font-size: 2.4rem; background: #fff; border-radius: 50%; width: 62px; height: 62px;
+  display: flex; align-items: center; justify-content: center; border: 4px solid var(--choco); }
+.header-info { flex: 1; }
+.hint { font-size: 1.05rem; font-weight: 700; }
+.status-line { display: flex; gap: 10px; align-items: center; margin-top: 4px; font-size: .9rem; flex-wrap: wrap; }
+
+/* 森林图 */
+.forest { position: relative; min-height: 320px; margin: 8px 0; }
+.forest svg { width: 100%; height: auto; display: block; }
+.node-line { stroke: #8a9a6a; stroke-width: 2.5; }
+.node {
+  cursor: default; transition: opacity .3s;
+}
+.node circle { stroke: #6b4a2b; stroke-width: 3; fill: #fff; }
+.node text.face { font-size: 22px; text-anchor: middle; dominant-baseline: central; }
+.node text.name { font-size: 12px; text-anchor: middle; font-weight: 700; }
+.node.visible { opacity: 1; }
+.node.hidden { opacity: 0; pointer-events: none; }
+.node.wave { animation: wave-glow 1s ease infinite alternate; }
+.node.wave circle { fill: #fff3b8; stroke: var(--gold); stroke-width: 4; }
+.node.found { animation: found-pop .6s ease; }
+.node.found circle { fill: #b8f0b8; stroke: var(--green); stroke-width: 4; }
+.node.level-badge text { font-size: 14px; font-weight: 900; fill: #b8860b; }
+@keyframes wave-glow {
+  from { filter: drop-shadow(0 0 2px rgba(255,213,79,.5)); }
+  to { filter: drop-shadow(0 0 12px rgba(255,213,79,1)); }
+}
+@keyframes found-pop {
+  0% { transform: scale(.5); }
+  60% { transform: scale(1.3); }
+  100% { transform: scale(1); }
+}
+
+/* 圈数徽章 */
+.ring-badge {
+  position: absolute; top: 8px; right: 8px; background: #fff;
+  border: 3px solid #5c9cff; border-radius: 18px; padding: 4px 14px;
+  font-weight: 900; color: #5c9cff; font-size: 1rem;
+}
+
+/* 扩散按钮 */
+.action-zone { text-align: center; margin: 10px 0; }
+.btn-expand {
+  font-size: 1.3rem; padding: 16px 40px; border-radius: 22px;
+  border: 4px solid var(--choco); background: #fff; cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0,0,0,.2);
+}
+.btn-expand:active { transform: scale(.94); }
+
+.guess-zone { text-align: center; margin: 6px 0; }
+.btn-guess {
+  font-size: 1rem; padding: 10px 24px; border-radius: 18px;
+  border: 3px solid #5c9cff; background: #eaf3ff; cursor: pointer;
+  box-shadow: 0 3px 8px rgba(0,0,0,.15);
+}
+.btn-guess:active { transform: scale(.94); }
+
+.feedback { text-align: center; font-size: 1.3rem; font-weight: 800; min-height: 2rem; margin: 6px 0; }
+.feedback.ok { color: #2e7d32; }
+.feedback.no { color: #d32f2f; }
+
+.btn-reset, .btn-home {
+  display: block; margin: 8px auto; padding: 12px 24px; font-size: 1.02rem;
+  border-radius: 18px; border: 3px solid var(--choco); cursor: pointer;
+  background: #fff; box-shadow: 0 4px 8px rgba(0,0,0,.18);
+}
+.btn-home { background: #ffe9d6; }
+
+.stats-title { text-align: center; margin: 20px 0 10px; }
+.stats-box { background: rgba(255,255,255,.85); border-radius: 18px; padding: 16px; margin: 12px 0; font-size: 1.02rem; line-height: 1.9; }
+.stats-box .big { font-size: 1.35rem; font-weight: 800; }
+
+@keyframes celebrate-pop { 0% { transform: scale(0) rotate(-20deg); } 70% { transform: scale(1.4) rotate(10deg); } 100% { transform: scale(1) rotate(0); } }
+.celebrate { animation: celebrate-pop .6s ease; display: inline-block; }
+
+.fast * { animation: none !important; transition: none !important; }
+
+@media (max-width: 480px) {
+  .animal-picker button { width: 64px; height: 64px; font-size: 1.9rem; }
+  .title { font-size: 1.5rem; }
+}

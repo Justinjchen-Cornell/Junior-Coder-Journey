@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>小猴子找朋友 🐒</title>
+  <link rel="stylesheet" href="css/style.1.0.css">
+</head>
+<body class="">
+<script>if (location.search.includes('fast=1')) document.body.className = 'fast';</script>
+  <div id="app">
+    <section id="screen-animal" class="screen active">
+      <a class="btn-portal-mini" href="../index.html">🎡 回游乐场</a>
+      <h1 class="title">🐒 小猴子找朋友</h1>
+      <p class="subtitle">小猴想找"会做冰淇淋的朋友"！一圈一圈问，找到它！</p>
+      <div class="animal-picker" id="animal-picker"></div>
+      <div class="mode-picker" id="mode-picker">
+        <button class="mode-btn baby" data-mode="baby">🍼 宝宝模式<br><small>小森林 · 6-8 只</small></button>
+        <button class="mode-btn challenge" data-mode="challenge">🚀 挑战模式<br><small>大森林 · 12-16 只</small></button>
+      </div>
+    </section>
+
+    <section id="screen-game" class="screen">
+      <header class="game-header">
+        <span class="animal-face" id="animal-face">🐒</span>
+        <div class="header-info">
+          <div class="hint" id="hint">按「扩散」按钮，一圈圈找！</div>
+          <div class="status-line">
+            <span class="steps" id="steps"></span>
+            <span class="record" id="record"></span>
+          </div>
+        </div>
+      </header>
+
+      <!-- 森林关系图 -->
+      <div class="forest" id="forest"></div>
+
+      <!-- 扩散按钮 -->
+      <div class="action-zone">
+        <button class="btn-expand" id="btn-expand">🌊 扩散下一圈！</button>
+      </div>
+
+      <!-- 挑战模式：猜目标 -->
+      <div class="guess-zone" id="guess-zone">
+        <button class="btn-guess" id="btn-guess">🤔 我觉得目标就在刚亮的圈里！</button>
+      </div>
+
+      <div class="feedback" id="feedback"></div>
+      <button class="btn-reset" id="btn-reset">🔄 再来一次</button>
+      <button class="btn-home" id="btn-home">🏠 换批小动物</button>
+    </section>
+
+    <section id="screen-stats" class="screen">
+      <h2 class="stats-title" id="stats-title">找到啦！</h2>
+      <div class="reward-card" id="stats-reward" style="display:none"></div>
+      <div class="stats-box" id="stats-box"></div>
+      <button class="btn-reset" id="btn-stats-reset">🔄 再找一次</button>
+      <button class="btn-home" id="btn-stats-home">🏠 换个模式</button>
+      <a class="btn-portal" href="../index.html">🎡 回游乐场</a>
+    </section>
+  </div>
+  <script src="js/game.1.0.js"></script>
+  <script src="js/ui.1.0.js"></script>
+</body>
+</html>
