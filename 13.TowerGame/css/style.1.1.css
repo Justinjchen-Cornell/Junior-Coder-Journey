@@ -142,3 +142,11 @@ body {
 .mm-tower.greedy { border-color: #ff8a50; border-style: dashed; background: #fff3e6; }
 .mm-tower.optimal { border-color: #ffd54f; box-shadow: 0 0 12px rgba(255,213,79,.9); background: #fffbe6; }
 .mm-legend { font-size: .8rem; font-weight: 700; color: #5a6a4f; margin-top: 8px; text-align: center; }
+
+.tower-btn.hint { border-color: #ffd54f; box-shadow: 0 0 14px rgba(255,213,79,.9); animation: hint-bob 1s ease infinite; }
+@keyframes hint-bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+.btn-hint {
+  font-size: 1rem; padding: 10px 22px; border-radius: 16px;
+  border: 3px solid #ffd54f; background: #fffbe6; cursor: pointer;
+  box-shadow: 0 3px 6px rgba(0,0,0,.12);
+}

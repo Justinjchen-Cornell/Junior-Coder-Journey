@@ -83,6 +83,30 @@ function createAcornGame(level) {
     return { v, set };
   }
 
+  // 剩余容量最优提示：还没装的物品 × 剩余容量（子问题当场可见！）
+  function getRemainingBest() {
+    const remain = items.filter(i => !chosen.has(i.id));
+    const cap = capacity - currentW();
+    if (cap <= 0 || !remain.length) return { v: 0, items: [] };
+    const dp = Array.from({ length: remain.length + 1 }, () => Array(cap + 1).fill(0));
+    for (let i = 1; i <= remain.length; i++) {
+      const { w, v } = remain[i - 1];
+      for (let c = 1; c <= cap; c++) {
+        if (w > c) dp[i][c] = dp[i - 1][c];
+        else dp[i][c] = Math.max(dp[i - 1][c], dp[i - 1][c - w] + v);
+      }
+    }
+    const set = [];
+    let c = cap;
+    for (let i = remain.length; i > 0; i--) {
+      if (dp[i][c] !== dp[i - 1][c]) {
+        set.push(remain[i - 1].id);
+        c -= remain[i - 1].w;
+      }
+    }
+    return { v: dp[remain.length][cap], items: set };
+  }
+
   // ---------- 接口 ----------
   function toggleItem(id) {
     if (finished) return false;
@@ -130,7 +154,7 @@ function createAcornGame(level) {
     get currentV() { return currentV(); },
     get toggledCount() { return chosen.size; },
     get isFinished() { return finished; },
-    toggleItem, finish, isIn, starsFor, getStats, reset,
+    toggleItem, finish, isIn, getRemainingBest, starsFor, getStats, reset,
   };
 }
 

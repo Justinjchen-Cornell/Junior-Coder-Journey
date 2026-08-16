@@ -94,6 +94,23 @@ function createKnnGame(level) {
     return best;
   }
 
+  function rankOf(id) {
+    // 第 N 近排名（1 = 最近）
+    const sorted = animals.slice().sort((a, b) => dist(a.x, a.y) - dist(b.x, b.y));
+    return sorted.findIndex(a => a.id === id) + 1;
+  }
+
+  function voteBreakdown(kk) {
+    // 最近 K 个的投票统计（各族几票）
+    const ids = trueNearest(kk);
+    const counts = {};
+    ids.forEach(id => {
+      const c = animals.find(a => a.id === id).cls;
+      counts[c] = (counts[c] || 0) + 1;
+    });
+    return counts;
+  }
+
   function toggleNeighbor(id) {
     if (voted) return false;
     if (neighbors.has(id)) {
@@ -162,7 +179,7 @@ function createKnnGame(level) {
     get voted() { return voted; },
     get voteCorrect() { return voteCorrect; },
     get trueClass() { return trueClass; },
-    distanceTo, trueNearest, voteResultFor,
+    distanceTo, trueNearest, voteResultFor, rankOf, voteBreakdown,
     toggleNeighbor, setK, vote, starsFor, getStats, reset,
   };
 }

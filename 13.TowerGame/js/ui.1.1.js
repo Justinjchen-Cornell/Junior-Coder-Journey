@@ -33,6 +33,8 @@
       btn.addEventListener('click', () => startGame(Number(btn.dataset.level)));
     });
     document.getElementById('btn-undo').addEventListener('click', onUndo);
+    document.getElementById('btn-hint').addEventListener('click', onHint);
+    state.hintUsed = false;
     document.getElementById('btn-reset').addEventListener('click', () => resetGame());
     document.getElementById('btn-home').addEventListener('click', () => showScreen('screen-start'));
     document.getElementById('btn-stats-reset').addEventListener('click', () => resetGame());
@@ -117,6 +119,21 @@
     if (g.isDone) {
       setTimeout(finishWin, 700);
     }
+  }
+
+  function onHint() {
+    const g = state.game;
+    if (state.hintUsed || g.isDone) return;
+    state.hintUsed = true;
+    const t = g.getHintTower();
+    if (t === null) return;
+    playSound('pop');
+    const btn = document.querySelector('[data-tower="' + t + '"]');
+    if (btn) {
+      btn.classList.add('hint');
+      btn.textContent = '🗼 盖它！（提示）';
+    }
+    setFeedback('💡 提示：这座塔是最优组合的一员！', 'ok');
   }
 
   function onUndo() {

@@ -100,12 +100,13 @@
     g.neighbors.forEach(id => {
       const a = g.animals.find(x => x.id === id);
       const d = Math.hypot(a.x - g.target.x, a.y - g.target.y).toFixed(1);
+      const rank = g.rankOf(id);   // 第 N 近排名徽章
       const midX = (px(a.x) + px(g.target.x)) / 2;
       const midY = (py(a.y) + py(g.target.y)) / 2;
       svg.insertAdjacentHTML('beforeend',
         '<line class="knn-line" x1="' + px(g.target.x) + '" y1="' + py(g.target.y) +
         '" x2="' + px(a.x) + '" y2="' + py(a.y) + '"></line>' +
-        '<text class="knn-dist" x="' + midX + '" y="' + midY + '">' + d + '</text>');
+        '<text class="knn-dist" x="' + midX + '" y="' + midY + '">' + d + ' 步 · 第' + rank + '近</text>');
     });
     document.querySelectorAll('.known-animal').forEach(el => {
       const id = Number(el.dataset.animal);
@@ -201,8 +202,18 @@
       : (state.level === 2
         ? '<div>💡 最近的 1 个可能是噪声！看 K 个邻居投票才稳！</div>'
         : '<div>💡 物以类聚——最近的邻居们就是答案！</div>');
+    // 投票计数条：真·最近 K 个各族几票
+    const bd = state.game.voteBreakdown(s.k);
+    const bars = state.game.classes.map((face, cls) => {
+      const cnt = bd[cls] || 0;
+      const width = s.k ? Math.round(cnt / s.k * 100) : 0;
+      return '<div class="vote-bar"><span class="vb-face">' + face + '</span>' +
+        '<div class="vb-track"><div class="vb-fill" style="width:' + width + '%"></div></div>' +
+        '<span class="vb-count">' + cnt + ' 票</span></div>';
+    }).join('');
     document.getElementById('race-card').innerHTML =
       '<div class="big">答案是 ' + CLASS_FACES[s.trueClass] + ' 蹦蹦族！</div>' +
+      '<div class="vote-bars">' + bars + '</div>' +
       '<div>🟢 你选的邻居：' + yourNb + '（投票 → ' + CLASS_FACES[s.voteResult] + '）</div>' +
       '<div>🟡 真·最近 ' + s.k + ' 个：' + trueNb + '（投票 → ' + CLASS_FACES[s.voteResult] + '）</div>' +
       kMsg;

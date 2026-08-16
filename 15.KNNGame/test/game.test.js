@@ -106,3 +106,17 @@ test('reset：清空选择', () => {
   assert.strictEqual(g.neighborCount, 0);
   assert.strictEqual(g.voted, false);
 });
+test('第 N 近排名：真最近集合 = 排名 1..K', () => {
+  const g = createKnnGame(1);
+  const trueK = g.trueNearest(3);
+  const ranks = trueK.map(id => g.rankOf(id)).sort((a, b) => a - b);
+  assert.deepStrictEqual(ranks, [1, 2, 3]);
+});
+
+test('投票统计：最近 K 个各族票数 = 各族数量', () => {
+  const g = createKnnGame(3);
+  const bd = g.voteBreakdown(3);
+  const ids = g.trueNearest(3);
+  const total = Object.values(bd).reduce((a, b) => a + b, 0);
+  assert.strictEqual(total, ids.length);
+});

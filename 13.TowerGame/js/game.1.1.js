@@ -148,6 +148,12 @@ function createTowerGame(level) {
     return ids;
   }
 
+  function getHintTower() {
+    // 提示：返回一座还没盖的"最优组合里的塔"（每关 1 次）
+    const opt = optimalTowerSet();
+    return opt.find(id => !chosen.includes(id)) ?? null;
+  }
+
   function reset() {
     chosen = [];
     covered = new Set();
@@ -161,7 +167,7 @@ function createTowerGame(level) {
     get coveredCount() { return covered.size; },
     get towersUsed() { return chosen.length; },
     get isDone() { return done; },
-    chooseTower, undo, simulateGreedy, starsFor, getStats, reset,
+    chooseTower, undo, simulateGreedy, getHintTower, starsFor, getStats, reset,
   };
 }
 

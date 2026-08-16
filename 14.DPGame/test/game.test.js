@@ -112,3 +112,17 @@ test('reset：清空篮子', () => {
   assert.strictEqual(g.currentV, 0);
   assert.strictEqual(g.toggledCount, 0);
 });
+test('剩余容量最优提示：装一部分后，剩余最优 + 已装 = 全局最优（子问题）', () => {
+  for (const lv of [1, 2, 3]) {
+    const g = createAcornGame(lv);
+    const opt = g.getStats().optimalV;
+    // 先装"最优组合去掉一件"的部分
+    const optSet = g.getStats().optimalSet.slice();
+    if (optSet.length >= 2) {
+      optSet.slice(0, optSet.length - 1).forEach(id => g.toggleItem(id));
+      const rb = g.getRemainingBest();
+      assert.strictEqual(g.currentV + rb.v, opt, '第 ' + lv + ' 关: 已装+剩余最优 = 全局最优');
+      assert.ok(rb.v >= 0);
+    }
+  }
+});

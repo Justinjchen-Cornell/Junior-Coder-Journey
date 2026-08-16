@@ -87,6 +87,7 @@
     }
     basket.innerHTML = slots.join('');
     document.getElementById('basket-fill').textContent = g.currentW;
+    if (typeof renderRemainHint === 'function') renderRemainHint();
   }
 
   function basketFaceAt(g, slotIdx) {
@@ -127,7 +128,23 @@
     }
     renderItems();
     renderBasket();
+    renderRemainHint();
     updateStatus();
+  }
+
+  // 剩余容量最优提示（DP 子问题当场可见）
+  function renderRemainHint() {
+    const g = state.game;
+    const el = document.getElementById('remain-hint');
+    if (!el) return;
+    const rb = g.getRemainingBest();
+    const cap = g.capacity - g.currentW();
+    if (cap <= 0 || !rb.items.length) {
+      el.textContent = cap <= 0 ? '🧺 篮子满了！' : '';
+      return;
+    }
+    const faces = rb.items.map(id => g.items.find(i => i.id === id).name).join('+');
+    el.textContent = '💡 还剩 ' + cap + ' 格：最多还能加 ⭐' + rb.v + '（试试 ' + faces + '）';
   }
 
   function onFinish() {
