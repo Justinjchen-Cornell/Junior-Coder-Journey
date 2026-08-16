@@ -51,6 +51,27 @@ const URL = 'file:///' + path.resolve(__dirname, '..', 'index.html').split(path.
   check('挑战钩子通关', chResult.done);
   check('冲突链柜体验发生', chResult.collisionFinds >= 1);
 
+
+  // --- 🚜 工程队模式：算格子号（哈希函数） ---
+  await page.click('#btn-home');
+  await page.click('.mode-btn.team');
+  check('工程队规则显示', (await page.$eval('.hash-table', el => el.textContent)).includes('编号 % 100'));
+  check('工具带大编号', await page.$('.real-id') !== null);
+  check('格子号三选一出现', (await page.$$('.hash-option')).length === 3);
+  const teamResult = await page.evaluate(() => {
+    const g = window.__game;
+    let guard = 0;
+    while (!g.isDone && guard++ < 300) {
+      const t = g.currentTarget;
+      const h = g.hashOptions(t.realId);
+      const r = g.submitHash(h.correct);
+      if (r && r.ok && r.collision) g.confirmTarget(t.id);
+    }
+    return { done: g.isDone, found: g.getStats().found, total: g.items.length, collisionFinds: g.collisionFinds };
+  });
+  check('工程队钩子通关', teamResult.done && teamResult.found === teamResult.total);
+  check('冲突篮体验发生', teamResult.collisionFinds >= 1);
+
   console.log(log.join('\n'));
   await browser.close();
   console.log(process.exitCode ? '\n有失败项 ❌' : '\n小动物储物柜冒烟全部通过 🎉');

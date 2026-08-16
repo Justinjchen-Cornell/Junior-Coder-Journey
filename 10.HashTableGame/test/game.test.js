@@ -1,7 +1,7 @@
 // 《小动物储物柜》核心逻辑测试（哈希表）
 const test = require('node:test');
 const assert = require('node:assert');
-const { createLockerGame } = require('../js/game.1.0.js');
+const { createLockerGame } = require('../js/game.1.1.js');
 
 test('初始化：宝宝模式 4-5 件物品，柜号不冲突', () => {
   const g = createLockerGame('baby');
@@ -100,4 +100,45 @@ test('reset：恢复初始', () => {
   assert.strictEqual(g.mistakes, 0);
   assert.strictEqual(g.getStats().found, 0);
   assert.ok(!g.isDone);
+});
+
+test('工程队模式：工具贴大编号，格子号 = 编号%100，恰有 2 对冲突', () => {
+  const g = createLockerGame('team');
+  assert.ok(g.items.length >= 8 && g.items.length <= 10);
+  g.items.forEach(i => {
+    assert.strictEqual(i.locker, i.realId % 100);
+    assert.ok(i.realId >= 1 && i.realId <= 199);
+  });
+  const count = {};
+  g.items.forEach(i => { count[i.locker] = (count[i.locker] || 0) + 1; });
+  assert.strictEqual(Object.values(count).filter(c => c === 2).length, 2);
+});
+
+test('工程队模式：hashOptions 含正确答案，陷阱含原编号', () => {
+  const g = createLockerGame('team');
+  const t = g.currentTarget;
+  const h = g.hashOptions(t.realId);
+  assert.strictEqual(h.correct, t.realId % 100);
+  assert.ok(h.options.includes(h.correct));
+  assert.strictEqual(h.options.length, 3);
+});
+
+test('工程队模式：submitHash 算对 → 开格找到；算错 → 错误', () => {
+  const g = createLockerGame('team');
+  const t = g.currentTarget;
+  // 算对
+  const r = g.submitHash(t.locker);
+  if (r.found) {
+    assert.strictEqual(r.ok, true);
+  } else {
+    // 冲突 → 链上确认
+    assert.ok(r.collision);
+    assert.strictEqual(g.confirmTarget(t.id), true);
+  }
+  assert.strictEqual(g.mistakes, 0);
+  // 下一件算错
+  const t2 = g.currentTarget;
+  const wrong = t2.locker === 1 ? 2 : t2.locker - 1;
+  assert.strictEqual(g.submitHash(wrong), false);
+  assert.strictEqual(g.mistakes, 1);
 });

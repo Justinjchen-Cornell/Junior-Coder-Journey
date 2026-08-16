@@ -88,12 +88,74 @@
     const t = state.game.currentTarget;
     const el = document.getElementById('target-item');
     if (!t) { el.innerHTML = '🎉 都取完啦！'; return; }
-    el.innerHTML = '<div class="reveal">要取：' + t.name + '</div>';
-    document.getElementById('hint').textContent = '查号码表，点它所在的柜子！';
+    if (state.mode === 'team') {
+      // 工程队：显示工具 + 大编号 → 孩子先算"格子号"
+      el.innerHTML = '<div class="reveal">要取：' + t.name + ' <span class="real-id">编号 ' + t.realId + '</span></div>';
+      document.getElementById('hint').textContent = '🚜 规则：编号去尾（%100）就是格子号！它该进几号格子？';
+      document.getElementById('collision-zone').innerHTML = '';
+      renderHashOptions(t);
+    } else {
+      el.innerHTML = '<div class="reveal">要取：' + t.name + '</div>';
+      document.getElementById('hint').textContent = '查号码表，点它所在的柜子！';
+    }
+  }
+
+  // 工程队：算格子号（3 选 1，陷阱 = 原编号）
+  function renderHashOptions(t) {
+    const g = state.game;
+    const h = g.hashOptions(t.realId);
+    document.getElementById('collision-zone').innerHTML =
+      '<div class="hash-question">' + t.name + '（编号 ' + t.realId + '）去尾后是几号格子？</div>' +
+      '<div class="chain-items">' +
+      h.options.map(o => '<div class="hash-option" data-hash="' + o + '">' + o + ' 号</div>').join('') +
+      '</div>';
+    document.querySelectorAll('.hash-option').forEach(ho => {
+      ho.addEventListener('click', () => onHashPick(Number(ho.dataset.hash)));
+    });
+  }
+
+  function onHashPick(chosen) {
+    const g = state.game;
+    const r = g.submitHash(chosen);
+    if (r && r.ok) {
+      // 算对了！开格
+      const lk = document.querySelector('[data-locker="' + chosen + '"]');
+      if (lk) { lk.classList.add('open'); setTimeout(() => lk.classList.add('checked'), 350); }
+      if (r.found) {
+        playSound('correct');
+        setFeedback('算一次 + 开一次 = 找到！O(1)！', 'ok');
+        setTimeout(() => {
+          if (g.isDone) finishWin();
+          else { renderTarget(); updateStatus(); }
+        }, 500);
+      } else if (r.collision) {
+        playSound('pop');
+        setFeedback('这个格子有两件（编号冲突）！篮子里找目标～', 'no');
+        document.getElementById('collision-zone').innerHTML =
+          '<div class="chain-hint">🧺 篮子里有：</div>' +
+          '<div class="chain-items">' +
+          r.items.map(i => '<div class="chain-item" data-chain-id="' + i.id + '">' + i.name +
+            '<small class="chain-tag">' + i.realId + '</small></div>').join('') +
+          '</div>';
+        document.querySelectorAll('.chain-item').forEach(ci => {
+          ci.addEventListener('click', () => onConfirmChain(Number(ci.dataset.chainId)));
+        });
+      }
+    } else {
+      playSound('wrong');
+      setFeedback('再看看？' + t.realId + ' 去尾后 = ' + (t.realId % 100) + ' 号', 'no');
+    }
   }
 
   function renderHashTable() {
     const g = state.game;
+    if (state.mode === 'team') {
+      document.getElementById('hash-table').innerHTML =
+        '<div class="ht-title">🚜 工程队规则（哈希函数）</div>' +
+        '<div class="ht-row">编号去尾 = 格子号：<b>编号 % 100</b></div>' +
+        '<div class="ht-row">例：37 → 37 号格 · 137 → 37 号格（冲突→篮子里）</div>';
+      return;
+    }
     const rows = g.items.map(i =>
       '<span class="ht-item">' + i.name + '→' + i.locker + ' 号</span>').join('');
     document.getElementById('hash-table').innerHTML =
@@ -166,6 +228,11 @@
   function showStatsPage(stats) {
     showScreen('screen-stats');
     document.getElementById('stats-title').textContent = '全部取到啦！' + '⭐'.repeat(stats.stars);
+    const teamMsg = state.mode === 'team'
+      ? '<div>🧺 冲突篮子里翻了 ' + stats.collisionFinds + ' 次</div>' +
+        '<div>💡 每次找工具 = 算一次（去尾）+ 开一次格——这就是 O(1)！</div>' +
+        '<div>137 和 37 挤一个格子就要翻篮子——格子多（空间换时间）就不挤！</div>'
+      : '';
     const collisionMsg = state.mode === 'challenge'
       ? '<div>链上翻了 ' + stats.collisionFinds + ' 次（冲突柜）</div>' +
         (stats.collisionFinds > 0
@@ -175,7 +242,7 @@
     document.getElementById('stats-box').innerHTML =
       '<div class="big">开了 ' + stats.openCount + ' 次柜，取到 ' + stats.total + ' 件</div>' +
       '<div>错误：' + stats.mistakes + ' 次</div>' +
-      collisionMsg +
+      (state.mode === 'team' ? teamMsg : collisionMsg) +
       '<div>🐻 小秘密：号码表就是"哈希表"——查号直接开柜 = 一下就找到！</div>' +
       '<div>柜号发得好（哈希函数好），柜子不挤；全挤一起就慢了！</div>';
   }

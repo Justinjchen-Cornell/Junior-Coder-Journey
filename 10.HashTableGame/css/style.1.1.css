@@ -111,3 +111,18 @@ body {
   .locker { width: 60px; height: 82px; }
   .title { font-size: 1.5rem; }
 }
+
+/* v1.1 工程队模式 */
+.mode-btn.team { border-color: #ff8a50; }
+.real-id {
+  display: inline-block; background: #ff8a50; color: #fff; border-radius: 10px;
+  font-size: 1rem; padding: 1px 10px; margin-left: 4px; vertical-align: middle;
+}
+.hash-question { font-size: 1.05rem; font-weight: 800; color: #d35400; margin-bottom: 8px; }
+.hash-option {
+  font-size: 1.6rem; font-weight: 900; background: #fff; border: 4px solid #ff8a50;
+  border-radius: 16px; width: 96px; height: 72px; display: flex; align-items: center;
+  justify-content: center; cursor: pointer; box-shadow: 0 3px 8px rgba(0,0,0,.15);
+}
+.hash-option:active { transform: scale(.92); }
+.chain-tag { display: block; font-size: .68rem; color: #8a6a4f; }

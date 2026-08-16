@@ -10,42 +10,65 @@ function shuffle(arr) {
 }
 
 const ITEM_FACES = ['🧢', '🧦', '🧤', '🥕', '🍎', '🎈', '🚗', '🐚', '🍪', '🎨'];
+const TOOL_FACES = ['🔧', '🔨', '🪛', '📏', '🔩', '🪚', '🧰', '🔦', '🪓', '🛠️'];
 
 function createLockerGame(mode) {
-  const baby = mode !== 'challenge';
-  const count = baby ? 4 + Math.floor(Math.random() * 2) : 8 + Math.floor(Math.random() * 3);
-  const lockerMax = baby ? 5 : 10;
+  const baby = mode === 'baby';
+  const team = mode === 'team';
+  const count = baby ? 4 + Math.floor(Math.random() * 2)
+    : 8 + Math.floor(Math.random() * 3);
 
-  // 生成物品与柜号
-  let lockers = [];
+  // 生成物品与格子号
+  let items;
   if (baby) {
-    // 无冲突：随机分配不同柜号
-    lockers = shuffle([...Array(count)].map((_, i) => i + 1));
+    // 无冲突：5 柜各一件（查号码表开柜）
+    const lockers = shuffle([...Array(count)].map((_, i) => i + 1));
+    items = lockers.map((locker, i) => ({
+      id: i, name: ITEM_FACES[i % ITEM_FACES.length], locker, realId: locker,
+    }));
+  } else if (team) {
+    // 工程队：工具贴大编号，格子号 = 编号 % 100（取后两位）
+    // 2 对冲突：同后两位的编号（如 37 与 137）
+    const c1 = 10 + Math.floor(Math.random() * 80);   // 冲突对 1 的尾数
+    let c2 = 10 + Math.floor(Math.random() * 80);
+    while (Math.abs(c2 - c1) < 5) c2 = 10 + Math.floor(Math.random() * 80);
+    const pairs = [
+      { base: c1, extra: 100 + c1 },
+      { base: c2, extra: 100 + c2 },
+    ];
+    const realIds = [];
+    pairs.forEach(pair => realIds.push(pair.base, pair.extra));
+    // 其余独立工具：编号 1-99（不与冲突尾数重复）
+    const usedTails = [c1, c2];
+    while (realIds.length < count) {
+      let n = 1 + Math.floor(Math.random() * 99);
+      if (!usedTails.includes(n % 100) && !realIds.includes(n)) {
+        realIds.push(n);
+      }
+    }
+    realIds.sort(() => Math.random() - 0.5);
+    items = realIds.map((realId, i) => ({
+      id: i, name: TOOL_FACES[i % TOOL_FACES.length], locker: realId % 100, realId,
+    }));
   } else {
-    // 挑战：2 对冲突 + 其余独立
-    const ids = [];
-    for (let i = 0; i < count; i++) ids.push(i + 1);
-    // 冲突柜号：随机挑 2 个不同柜号，各挂 2 件
+    // 挑战：10 柜 2 对冲突（链柜体验）
     const collisionL1 = 1 + Math.floor(Math.random() * 5);
     let collisionL2 = 1 + Math.floor(Math.random() * 5);
     while (collisionL2 === collisionL1) collisionL2 = 1 + Math.floor(Math.random() * 5);
     const assigned = [];
-    // 先安排冲突对
-    lockers = [collisionL1, collisionL1, collisionL2, collisionL2];
+    const lockers = [collisionL1, collisionL1, collisionL2, collisionL2];
     for (let i = 4; i < count; i++) {
-      let l = 1 + Math.floor(Math.random() * lockerMax);
+      let l = 1 + Math.floor(Math.random() * 10);
       while (l === collisionL1 || l === collisionL2 || assigned.includes(l)) {
-        l = 1 + Math.floor(Math.random() * lockerMax);
+        l = 1 + Math.floor(Math.random() * 10);
       }
       assigned.push(l);
       lockers.push(l);
     }
-    lockers = shuffle(lockers);
+    items = shuffle(lockers).map((locker, i) => ({
+      id: i, name: ITEM_FACES[i % ITEM_FACES.length], locker, realId: locker,
+    }));
   }
-
-  const items = lockers.map((locker, i) => ({
-    id: i, name: ITEM_FACES[i % ITEM_FACES.length], locker,
-  }));
 
   let queue = shuffle(items.map(i => i.id));   // 取物顺序
   let queueIdx = 0;
@@ -93,6 +116,31 @@ function createLockerGame(mode) {
     return false;
   }
 
+  function hashOptions(realId) {
+    // 工程队：给出"格子号"3 个选项（正确 = realId % 100）
+    const correct = realId % 100;
+    const opts = [correct];
+    // 干扰项：原编号（陷阱！）、尾数±1
+    const traps = [realId, correct + 1, correct - 1, correct + 10, correct - 10]
+      .filter(v => v >= 1 && v <= 99 && !opts.includes(v));
+    while (opts.length < 3 && traps.length) {
+      opts.push(traps.splice(Math.floor(Math.random() * traps.length), 1)[0]);
+    }
+    shuffle(opts);
+    return { correct, options: opts };
+  }
+
+  function submitHash(chosenLocker) {
+    // 工程队：先验证"算出来的格子号"，对了才开格
+    const target = currentTarget();
+    if (!target) return false;
+    if (chosenLocker !== target.locker) {
+      mistakes++;
+      return false;
+    }
+    return openLocker(chosenLocker);   // 开格（可能 found 或 collision）
+  }
+
   const done = () => queueIdx >= queue.length;
 
   function starsFor(errs) {
@@ -121,7 +169,7 @@ function createLockerGame(mode) {
     get isDone() { return done(); },
     get mistakes() { return mistakes; },
     get collisionFinds() { return collisionFinds; },
-    openLocker, confirmTarget, starsFor, getStats, reset,
+    openLocker, confirmTarget, hashOptions, submitHash, starsFor, getStats, reset,
   };
 }
 
