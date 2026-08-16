@@ -6,6 +6,8 @@
 >
 > *类型：亲子成长记录 + 算法启蒙 + 网页游戏*
 
+> **[English](./README.en.md)**
+
 [![Stars](https://img.shields.io/github/stars/Justinjchen-Cornell/Junior-Coder-Journey?style=flat-square&color=ffd54f)](https://github.com/Justinjchen-Cornell/Junior-Coder-Journey/stargazers)
 [![最后更新](https://img.shields.io/github/last-commit/Justinjchen-Cornell/Junior-Coder-Journey?style=flat-square&color=6ec96e)](https://github.com/Justinjchen-Cornell/Junior-Coder-Journey/commits/main)
 [![游戏](https://img.shields.io/badge/网页游戏-10%2F10-ff8fb3?style=flat-square)](https://justinjchen-cornell.github.io/Junior-Coder-Journey/)
