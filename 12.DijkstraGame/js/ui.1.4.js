@@ -87,18 +87,22 @@
   // ---------- SVG 地图（分层布局：起点左、终点右、中间按深度分列） ----------
   function renderMap() {
     const g = state.game;
-    const W = 780, H = 380;
+    const W = 800, H0 = 380;
     const n = g.nodeCount;
     const maxDepth = Math.max(...g.depth.map(d => d.d));
-    // 分层：x 按深度，y 按该层节点数均匀散布
+    // 分层：x 按深度，y 按该层节点数均匀散布（间距动态，画布高度自适应）
     const groups = {};
     g.depth.forEach(({ id, d }) => { (groups[d] = groups[d] || []).push(id); });
+    const maxCount = Math.max(...Object.values(groups).map(a => a.length));
+    const yStep = Math.min(92, (H0 - 100) / Math.max(maxCount, 1));
+    const H = Math.max(H0, 130 + maxCount * yStep);
+    const xStep = Math.min(140, (W - 180) / Math.max(maxDepth, 1));
     const pos = {};
     Object.keys(groups).forEach(d => {
       const ids = groups[d];
       ids.forEach((id, i) => {
         const x = 90 + (Number(d) / Math.max(maxDepth, 1)) * (W - 180);
-        const y = H / 2 + (i - (ids.length - 1) / 2) * 78;
+        const y = H / 2 + (i - (ids.length - 1) / 2) * yStep;
         pos[id] = { x, y };
       });
     });
@@ -109,20 +113,35 @@
 
     let lines = '';
     const drawn = new Set();
-    let ei = 0;
-    g.edges.forEach(e => {
+    const nodePosList = Object.values(pos);
+    const placedLabels = [];
+    g.edges.forEach((e, idx) => {
       const key = Math.min(e.a, e.b) + '-' + Math.max(e.a, e.b);
       if (drawn.has(key)) return;
       drawn.add(key);
-      ei++;
       const a = pos[e.a], b = pos[e.b];
-      const mx = (a.x + b.x) / 2, my = (a.y + b.y) / 2;
-      // 标签错位：按边序号上下左右微调，避免重叠
-      const offX = (ei % 3 - 1) * 14, offY = (ei % 2 === 0 ? 1 : -1) * 12;
       lines += '<line class="map-line" data-edge="' + e.a + '-' + e.b + '" x1="' + a.x + '" y1="' + a.y +
-        '" x2="' + b.x + '" y2="' + b.y + '"></line>' +
-        '<text class="edge-label" x="' + (mx + offX) + '" y="' + (my + offY) + '">' + e.w + '💰</text>';
+        '" x2="' + b.x + '" y2="' + b.y + '"></line>';
+      // 边权标签：中点 + 垂直方向偏移 + 碰撞避免（自动推远）
+      const dx = b.x - a.x, dy = b.y - a.y;
+      const len = Math.sqrt(dx * dx + dy * dy) || 1;
+      const px = -dy / len, py = dx / len;          // 边的垂直方向
+      let off = 16 * (idx % 2 === 0 ? 1 : -1);
+      let lx = mx0(a, b) + px * off, ly = my0(a, b) + py * off;
+      for (let g2 = 0; g2 < 8; g2++) {
+        const nearNode = nodePosList.some(p => Math.hypot(lx - p.x, ly - p.y) < 34);
+        const nearLabel = placedLabels.some(l => Math.hypot(lx - l.x, ly - l.y) < 34);
+        if (!nearNode && !nearLabel) break;
+        off += 14 * (off >= 0 ? 1 : -1);
+        lx = mx0(a, b) + px * off;
+        ly = my0(a, b) + py * off;
+      }
+      placedLabels.push({ x: lx, y: ly });
+      lines += '<text class="edge-label" x="' + lx.toFixed(1) + '" y="' + ly.toFixed(1) + '">' +
+        e.w + (isTeam() ? 'km' : '💰') + '</text>';
     });
+    function mx0(a, b) { return (a.x + b.x) / 2; }
+    function my0(a, b) { return (a.y + b.y) / 2; }
 
     let stations = '';
     for (let i = 0; i < n; i++) {

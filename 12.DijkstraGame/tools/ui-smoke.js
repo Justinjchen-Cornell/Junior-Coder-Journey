@@ -18,6 +18,34 @@ const URL = 'file:///' + path.resolve(__dirname, '..', 'index.html').split(path.
   // 宝宝模式：地图 + 走邻居到终点
   check('地图渲染', await page.$('.map svg') !== null);
   check('起点🏠/终点🏫标记', await page.$('.station.end') !== null);
+  // 布局检查：节点在画布内 + 边权标签互不重叠
+  const layout = await page.evaluate(() => {
+    const svg = document.querySelector('.map svg');
+    const vb = svg.viewBox.baseVal;
+    const out = [];
+    document.querySelectorAll('.station').forEach(g => {
+      const t = g.getAttribute('transform');
+      const m = t.match(/translate\((\d+(?:\.\d+)?),(\d+(?:\.\d+)?)\)/);
+      if (m) {
+        const x = Number(m[1]), y = Number(m[2]);
+        if (x < 0 || y < 0 || x > vb.width || y > vb.height) out.push('node ' + x + ',' + y);
+      }
+    });
+    const labels = [];
+    document.querySelectorAll('.edge-label').forEach(t => {
+      labels.push({ x: Number(t.getAttribute('x')), y: Number(t.getAttribute('y')) });
+    });
+    let close = 0;
+    for (let i = 0; i < labels.length; i++) {
+      for (let j = i + 1; j < labels.length; j++) {
+        const d = Math.hypot(labels[i].x - labels[j].x, labels[i].y - labels[j].y);
+        if (d < 24) close++;
+      }
+    }
+    return { out, close, labels: labels.length, vb: vb.width + 'x' + vb.height };
+  });
+  check('节点无越界（' + layout.vb + '）', layout.out.length === 0);
+  check('标签互不重叠（' + layout.labels + ' 个标签）', layout.close === 0);
   // 多条路线保证：边数 > 节点数-1（存在环 → 有选择）
   const topo = await page.evaluate(() => {
     const g = window.__game;
