@@ -1,7 +1,7 @@
 // 《猜猜小动物在哪里》核心逻辑测试（node --test）
 const test = require('node:test');
 const assert = require('node:assert');
-const { createGame } = require('../js/game.js');
+const { createGame } = require('../js/game.1.0.js');
 
 test('createGame 初始化：宝宝模式 1-10', () => {
   const g = createGame('baby');

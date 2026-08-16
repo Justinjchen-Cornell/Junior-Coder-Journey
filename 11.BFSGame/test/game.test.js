@@ -1,7 +1,7 @@
 // 《小猴子找朋友》核心逻辑测试（BFS）
 const test = require('node:test');
 const assert = require('node:assert');
-const { createBFSGame } = require('../js/game.1.5.js');
+const { createBFSGame } = require('../js/game.1.6.js');
 
 test('初始化：宝宝 6-8 节点，目标不在起点，图连通', () => {
   const g = createBFSGame('baby');

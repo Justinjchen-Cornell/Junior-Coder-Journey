@@ -1,7 +1,7 @@
 // 《书架整理员》核心逻辑测试（快排分而治之）
 const test = require('node:test');
 const assert = require('node:assert');
-const { createSortGame } = require('../js/game.1.1.js');
+const { createSortGame } = require('../js/game.1.2.js');
 
 test('初始化：书本 1..n 乱序', () => {
   const g = createSortGame('baby');

@@ -1,7 +1,7 @@
 // 《小松鼠装松果》核心逻辑测试（0/1 背包 / DP）
 const test = require('node:test');
 const assert = require('node:assert');
-const { createAcornGame } = require('../js/game.1.0.js');
+const { createAcornGame } = require('../js/game.1.1.js');
 
 test('三关结构：容量/物品数正确', () => {
   const spec = { 1: [4, 3], 2: [5, 4], 3: [7, 6] };

@@ -1,7 +1,7 @@
 // 《排队买冰淇淋》核心逻辑测试（node --test）
 const test = require('node:test');
 const assert = require('node:assert');
-const { createQueueGame } = require('../js/game.js');
+const { createQueueGame } = require('../js/game.1.0.js');
 
 test('初始化：宝宝模式 5~8 张牌，值为 1..n 完整排列', () => {
   const g = createQueueGame('baby');

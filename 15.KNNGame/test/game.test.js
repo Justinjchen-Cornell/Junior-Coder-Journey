@@ -1,7 +1,7 @@
 // 《猜猜它是谁》核心逻辑测试（KNN）
 const test = require('node:test');
 const assert = require('node:assert');
-const { createKnnGame } = require('../js/game.1.0.js');
+const { createKnnGame } = require('../js/game.1.1.js');
 
 test('三关结构：动物数/族类正确', () => {
   const spec = { 1: [8, 2], 2: [9, 2], 3: [12, 3] };

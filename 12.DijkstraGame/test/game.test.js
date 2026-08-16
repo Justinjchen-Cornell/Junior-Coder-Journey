@@ -1,7 +1,7 @@
 // 《蚂蚁找食物》核心逻辑测试（Dijkstra 重做版）
 const test = require('node:test');
 const assert = require('node:assert');
-const { createAntGame } = require('../js/game.1.1.js');
+const { createAntGame } = require('../js/game.1.2.js');
 
 test('三关结构：4/6/8 路口，连通，起点≠终点', () => {
   const sizes = { 1: 4, 2: 6, 3: 8 };
