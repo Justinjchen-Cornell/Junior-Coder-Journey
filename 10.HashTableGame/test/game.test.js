@@ -60,9 +60,14 @@ test('挑战模式冲突柜：开柜先看到链（collision），确认目标�
     assert.strictEqual(g.confirmTarget(target.id), true);
     assert.strictEqual(g.collisionFinds, 1);
   } else {
-    // 目标不在冲突柜：正常开中
+    // 目标可能在其他冲突柜或普通柜：都要能正确处理
     r = g.openLocker(target.locker);
-    assert.strictEqual(r.found, true);
+    if (r.found) {
+      assert.strictEqual(r.ok, true);
+    } else {
+      assert.ok(r.collision, '目标应能通过链确认');
+      assert.strictEqual(g.confirmTarget(target.id), true);
+    }
   }
 });
 

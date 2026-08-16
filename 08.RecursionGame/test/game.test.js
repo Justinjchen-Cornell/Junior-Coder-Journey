@@ -1,7 +1,7 @@
 // 《套娃拆拆乐》v2 核心逻辑测试
 const test = require('node:test');
 const assert = require('node:assert');
-const { createNestGame } = require('../js/game.js');
+const { createNestGame } = require('../js/game.2.1.js');
 
 test('初始化：宝宝模式 5-7 层，全部 +1', () => {
   const g = createNestGame('baby');

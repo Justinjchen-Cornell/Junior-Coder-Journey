@@ -10,6 +10,7 @@
   <div id="app">
     <!-- 开场：选动物 -->
     <section id="screen-animal" class="screen active">
+      <a class="btn-portal-mini" href="../index.html">🎡 回游乐场</a>
       <h1 class="title">🐿️ 猜猜小动物在哪里</h1>
       <p class="subtitle">今天谁躲起来了呀？</p>
       <div class="animal-picker" id="animal-picker"></div>
@@ -33,9 +34,11 @@
         </div>
       </header>
       <div class="board" id="board"></div>
+      <div class="reward-card" id="stats-reward" style="display:none"></div>
       <div class="feedback" id="feedback"></div>
       <button class="btn-reset" id="btn-reset">🔄 再玩一次</button>
       <button class="btn-home" id="btn-home">🏠 换个小动物</button>
+      <a class="btn-portal" href="../index.html">🎡 回游乐场</a>
     </section>
   </div>
   <script src="js/game.js"></script>

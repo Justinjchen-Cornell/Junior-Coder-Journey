@@ -191,6 +191,16 @@
     const theo = stats.theoretical;
     const stars = stats.stars;
     document.getElementById('stats-title').textContent = '排好啦！' + '⭐'.repeat(stars);
+
+    // ===== 奖励评价 =====
+    const rewardEl = document.getElementById('stats-reward');
+    if (rewardEl) {
+      const praise = { 3: '🏆 太棒了！你是算法小天才！', 2: '🎖️ 好厉害！再来一次，冲击三星！', 1: '💪 很棒！多玩几次会更好！' }[stars] || '🎉 完成啦！';
+      rewardEl.style.display = 'block';
+      rewardEl.innerHTML = '<div class="confetti"><span>🎉</span><span>⭐</span><span>✨</span><span>🎊</span><span>🌟</span></div>' +
+        '<div class="reward-text">' + praise + '</div>';
+    }
+
     document.getElementById('stats-box').innerHTML =
       '<div class="big">你一共看了 👀 ' + stats.scans + ' 次！</div>' +
       '<div>小秘密：每张牌都被你看了好几遍——这就是排队累的原因！</div>' +

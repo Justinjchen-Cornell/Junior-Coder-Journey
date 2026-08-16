@@ -123,6 +123,16 @@
 
   function onWin(steps) {
     document.getElementById('stars').textContent = '⭐'.repeat(starsFor(steps));
+
+    // ===== 奖励评价 =====
+    const rewardEl = document.getElementById('stats-reward');
+    if (rewardEl) {
+      const praise = { 3: '🏆 太棒了！你是算法小天才！', 2: '🎖️ 好厉害！再来一次，冲击三星！', 1: '💪 很棒！多玩几次会更好！' }[starsFor(steps)] || '🎉 完成啦！';
+      rewardEl.style.display = 'block';
+      rewardEl.innerHTML = '<div class="confetti"><span>🎉</span><span>⭐</span><span>✨</span><span>🎊</span><span>🌟</span></div>' +
+        '<div class="reward-text">' + praise + '</div>';
+    }
+
     document.getElementById('hint').textContent =
       state.mode === 'challenge'
         ? (steps <= 7 ? '🎉 太棒了！二分法最快 7 次，你做到了！' : '找到啦！试试每次都猜中间，可以更快哦！')

@@ -138,3 +138,48 @@ body {
   60% { transform: scale(1.3); }
   100% { transform: scale(1); }
 }
+
+/* ===== 通用：回游乐场 + 奖励评价 ===== */
+.btn-portal {
+  display: block; margin: 8px auto; padding: 12px 26px; font-size: 1.05rem;
+  border-radius: 18px; border: 3px solid #ff8fb3; cursor: pointer;
+  background: linear-gradient(160deg, #fff, #ffe4ec); box-shadow: 0 4px 10px rgba(0,0,0,.15);
+  animation: portal-bob 2s ease-in-out infinite; text-decoration: none; text-align: center;
+  color: #3a2e1f; font-weight: 800; width: fit-content;
+}
+.btn-portal:hover { transform: scale(1.05); }
+@keyframes portal-bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
+.btn-portal-mini {
+  position: absolute; top: 10px; left: 10px; z-index: 20;
+  background: rgba(255,255,255,.9); border: 2px solid #ff8fb3; border-radius: 16px;
+  padding: 4px 12px; font-size: .82rem; font-weight: 800; color: #3a2e1f;
+  text-decoration: none; box-shadow: 0 2px 6px rgba(0,0,0,.12);
+}
+.reward-card {
+  text-align: center; background: linear-gradient(160deg, #fffbe6, #ffe9d9);
+  border: 4px solid #ffd54f; border-radius: 20px; padding: 14px; margin: 10px auto;
+  font-weight: 900; color: #b8860b; max-width: 360px;
+  box-shadow: 0 4px 12px rgba(0,0,0,.12);
+  animation: reward-pop .6s ease;
+}
+.reward-card .reward-text { font-size: 1.2rem; margin-top: 4px; }
+.confetti { position: relative; min-height: 40px; }
+.confetti span {
+  position: absolute; top: -8px; font-size: 1.3rem;
+  animation: confetti-fall 2.2s ease-in infinite;
+}
+.confetti span:nth-child(1) { left: 8%; animation-delay: 0s; }
+.confetti span:nth-child(2) { left: 28%; animation-delay: .3s; }
+.confetti span:nth-child(3) { left: 48%; animation-delay: .6s; }
+.confetti span:nth-child(4) { left: 68%; animation-delay: .9s; }
+.confetti span:nth-child(5) { left: 88%; animation-delay: 1.2s; }
+@keyframes confetti-fall {
+  0% { transform: translateY(-8px) rotate(0); opacity: 1; }
+  80% { transform: translateY(40px) rotate(300deg); opacity: 1; }
+  100% { transform: translateY(40px) rotate(360deg); opacity: 0; }
+}
+@keyframes reward-pop {
+  0% { transform: scale(.3) rotate(-10deg); opacity: 0; }
+  70% { transform: scale(1.15); }
+  100% { transform: scale(1); opacity: 1; }
+}

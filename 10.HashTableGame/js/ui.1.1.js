@@ -228,6 +228,16 @@
   function showStatsPage(stats) {
     showScreen('screen-stats');
     document.getElementById('stats-title').textContent = '全部取到啦！' + '⭐'.repeat(stats.stars);
+
+    // ===== 奖励评价 =====
+    const rewardEl = document.getElementById('stats-reward');
+    if (rewardEl) {
+      const praise = { 3: '🏆 太棒了！你是算法小天才！', 2: '🎖️ 好厉害！再来一次，冲击三星！', 1: '💪 很棒！多玩几次会更好！' }[stats] || '🎉 完成啦！';
+      rewardEl.style.display = 'block';
+      rewardEl.innerHTML = '<div class="confetti"><span>🎉</span><span>⭐</span><span>✨</span><span>🎊</span><span>🌟</span></div>' +
+        '<div class="reward-text">' + praise + '</div>';
+    }
+
     const teamMsg = state.mode === 'team'
       ? '<div>🧺 冲突篮子里翻了 ' + stats.collisionFinds + ' 次</div>' +
         '<div>💡 每次找工具 = 算一次（去尾）+ 开一次格——这就是 O(1)！</div>' +

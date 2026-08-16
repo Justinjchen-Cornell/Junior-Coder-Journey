@@ -252,6 +252,16 @@
   function showStatsPage(stats) {
     showScreen('screen-stats');
     document.getElementById('stats-title').textContent = '拆完啦！' + '⭐'.repeat(stats.stars);
+
+    // ===== 奖励评价 =====
+    const rewardEl = document.getElementById('stats-reward');
+    if (rewardEl) {
+      const praise = { 3: '🏆 太棒了！你是算法小天才！', 2: '🎖️ 好厉害！再来一次，冲击三星！', 1: '💪 很棒！多玩几次会更好！' }[stats] || '🎉 完成啦！';
+      rewardEl.style.display = 'block';
+      rewardEl.innerHTML = '<div class="confetti"><span>🎉</span><span>⭐</span><span>✨</span><span>🎊</span><span>🌟</span></div>' +
+        '<div class="reward-text">' + praise + '</div>';
+    }
+
     document.getElementById('stats-box').innerHTML =
       '<div class="big">一共 ' + stats.layers + ' 层盒子，答案 ' + stats.finalResult + '</div>' +
       '<div>错误：' + stats.mistakes + ' 次</div>' +
