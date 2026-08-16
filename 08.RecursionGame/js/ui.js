@@ -1,9 +1,10 @@
-// 《套娃拆拆乐》UI 层（DOM + 拆开动画 + 回溯 + 音效 + 纪录）
+// 《套娃拆拆乐》v2 UI（嵌套盒视觉 + 开盒动画 + 回溯传递动画 + 追踪玩法）
 (function () {
   'use strict';
 
   const ANIMALS = ['🐰', '🐻', '🦊', '🐱', '🐸'];
-  const state = { mode: 'baby', animal: '🐿️', game: null, phase: 'open', seen: [] };
+  const SURPRISES = ['✨', '🌸', '🍀', '⭐', '🍬', '🎈'];
+  const state = { mode: 'baby', animal: '🐿️', game: null, surprises: [] };
 
   // ---------- 音效 ----------
   let audioCtx = null;
@@ -14,6 +15,7 @@
       const notes = {
         wrong: [[220, 0.12, 'sine']],
         correct: [[523, 0.12, 'sine'], [659, 0.15, 'sine']],
+        pop: [[440, 0.08, 'triangle'], [660, 0.1, 'triangle']],
         win: [[523, 0.1, 'sine'], [659, 0.1, 'sine'], [784, 0.1, 'sine'], [1047, 0.3, 'sine']],
       }[type] || [];
       notes.forEach(([freq, dur, wave]) => {
@@ -57,23 +59,60 @@
     state.animal = animal || '🐿️';
     state.mode = mode || 'baby';
     state.game = createNestGame(state.mode);
-    state.phase = 'open';
-    state.seen = [];
+    state.surprises = [];
     document.getElementById('animal-face').textContent = state.animal;
     showScreen('screen-game');
-    renderDoll('🪆', '');
-    setHint('点「打开」，看看里面是什么');
+    renderOuter();
+    setHint('小松鼠的礼物塔！点「打开」，看看里面藏着什么');
     setFeedback('', '');
     document.getElementById('record').textContent = '';
     document.getElementById('steps').textContent = '';
     document.getElementById('backtrack-zone').innerHTML = '';
     document.getElementById('btn-open').style.display = 'inline-block';
-    updateStatus();
   }
 
   function showScreen(id) {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     document.getElementById(id).classList.add('active');
+  }
+
+  // ---------- 嵌套盒视觉 ----------
+  function renderOuter() {
+    // 最外层大盒（尚未拆开：看不到里面的）
+    const zone = document.getElementById('nest-zone');
+    zone.innerHTML =
+      '<div class="box-wrap reveal">' +
+      '<div class="box box1"><div class="box-face">🎁</div><div class="box-lid"></div></div>' +
+      '</div>';
+  }
+
+  function renderNested(opened, myValue, surprise) {
+    // 拆开第 opened 层：显示"盒子里还有更小的盒子"的嵌套视觉
+    const zone = document.getElementById('nest-zone');
+    let inner = '';
+    for (let i = 0; i < opened; i++) inner += '<div class="ring ring' + ((i % 3) + 1) + '"></div>';
+    zone.innerHTML =
+      '<div class="box-wrap">' +
+      '<div class="box box1"><div class="box-face">🎁</div></div>' +
+      '<div class="box box2"><div class="box-face">🎁</div></div>' +
+      inner +
+      '<div class="inner-box reveal">' +
+      '<div class="inner-face">' + (surprise ? surprise : '🪆') + '</div>' +
+      '<div class="layer-tag">+ ' + myValue + '</div>' +
+      '</div>' +
+      '</div>';
+    if (surprise) playSound('pop');
+  }
+
+  function renderEmpty() {
+    // 空盒（基线）：最小最里面——什么也没有
+    const zone = document.getElementById('nest-zone');
+    zone.innerHTML =
+      '<div class="box-wrap">' +
+      '<div class="box box1"></div><div class="box box2"></div><div class="box box3"></div>' +
+      '<div class="inner-box base reveal"><div class="inner-face">✨</div>' +
+      '<div class="layer-tag">空的！返回 0</div></div>' +
+      '</div>';
   }
 
   // ---------- 拆（递归下降） ----------
@@ -82,93 +121,96 @@
     if (g.isBaseReached) return;
     const r = g.openNext();
     if (r.isBase) {
-      // 空娃娃（基线）
-      renderDoll('✨', '空的！最小的娃娃里面什么也没有——到底啦！');
-      setHint('到底啦！最小的娃娃是空的（这就是"基线"）');
+      renderEmpty();
+      setHint('✨ 空的！最小的盒子什么也没有——这就是「基线」，它返回 0');
       playSound('correct');
-      state.phase = 'backtrack';
       document.getElementById('btn-open').style.display = 'none';
-      setTimeout(startBacktrack, 800);
+      setTimeout(() => {
+        if (state.mode === 'baby') babyBacktrack();
+        else challengeTrace();
+      }, 900);
     } else {
-      state.seen.push(r.value);
-      const sizes = ['big', 'small', 'tiny', 'micro', 'micro', 'micro', 'micro'];
-      renderDoll('🪆', r.value, sizes[Math.min(r.layer - 1, sizes.length - 1)]);
-      setHint('第 ' + r.layer + ' 层！继续打开看看～');
-      playSound('correct');
+      // 30% 概率本层藏惊喜
+      const surprise = Math.random() < 0.3 ? SURPRISES[Math.floor(Math.random() * SURPRISES.length)] : null;
+      if (surprise) {
+        state.surprises.push(surprise);
+        setHint('第 ' + r.layer + ' 层！哇，藏着一个 ' + surprise + '！继续开～');
+      } else {
+        setHint('第 ' + r.layer + ' 层！里面好像还有……继续开～');
+      }
+      renderNested(r.layer, r.myValue, surprise);
+      playSound('pop');
       updateStatus();
     }
   }
 
-  function renderDoll(face, tagText, sizeClass) {
-    const zone = document.getElementById('nest-zone');
-    zone.innerHTML = '<div class="doll reveal ' + (sizeClass || '') + '">' + face + '</div>' +
-      (tagText ? '<div class="layer-tag">' + tagText + '</div>' : '');
-  }
-
-  // ---------- 回溯（递归上升） ----------
-  function startBacktrack() {
-    const g = state.game;
-    if (state.mode === 'baby') {
-      babyBacktrack();
-    } else {
-      challengeBacktrack();
-    }
-  }
-
+  // ---------- 宝宝模式：回溯动画（答案从里往外传） ----------
   function babyBacktrack() {
-    // 系统从里往外数回来（弹栈动画）
-    const inner = state.seen.slice().reverse();
-    let i = 0;
-    setHint('现在数回来！从最小的开始……');
+    const g = state.game;
+    setHint('数回来！空盒说「0」，一层层往外传……');
+    let running = 0;
+    const zone = document.getElementById('nest-zone');
     const timer = setInterval(() => {
-      if (i < inner.length) {
-        renderDoll('🪆', inner[i], 'micro');
-        i++;
-      } else {
+      running += 1;   // 每层 +1（宝宝模式）
+      if (running > g.layers) {
         clearInterval(timer);
         askBabyTotal();
+        return;
       }
-    }, 600);
+      // 数字气泡从里往外传
+      zone.innerHTML =
+        '<div class="box-wrap">' +
+        '<div class="bubble travel reveal">' + running + '</div>' +
+        '</div>';
+      playSound('correct');
+    }, 650);
   }
 
   function askBabyTotal() {
     const n = state.game.layers;
     const options = [n - 1, n, n + 1];
     document.getElementById('backtrack-zone').innerHTML =
-      '<div class="hint" style="text-align:center;margin-bottom:8px">一共几层套娃？</div>' +
+      '<div class="hint">一共几个盒子？</div>' +
       options.map(v => '<button class="num-btn" data-ans="' + v + '">' + v + '</button>').join('');
     document.querySelectorAll('[data-ans]').forEach(btn => {
       btn.addEventListener('click', () => {
-        const ok = state.game.answer(Number(btn.dataset.ans));
-        if (ok) {
-          playSound('win');
-          onWin();
-        } else {
-          playSound('wrong');
-          setFeedback('再数数看？', 'no');
-        }
+        if (state.game.answer(Number(btn.dataset.ans))) { playSound('win'); onWin(); }
+        else { playSound('wrong'); setFeedback('再数数看？', 'no'); }
       });
     });
   }
 
-  function challengeBacktrack() {
-    // 数字牌按键：按"从里到外"顺序点
+  // ---------- 挑战模式：递归追踪（亲手执行返回值传递） ----------
+  function challengeTrace() {
+    setHint('现在算回来！空盒返回 0，一层层往外加……');
+    renderTraceStep();
+  }
+
+  function renderTraceStep() {
     const g = state.game;
-    const values = g.layerValues.slice().sort((a, b) => a - b);
-    setHint('按"从里到外"的顺序点数字！');
+    const step = g.getCurrentStep();
+    if (!step) return;
+    const zone = document.getElementById('nest-zone');
+    zone.innerHTML =
+      '<div class="box-wrap">' +
+      '<div class="trace-card reveal">' +
+      '<div class="trace-in">里面传来 <b>' + step.innerResult + '</b></div>' +
+      '<div class="trace-plus">＋ 这个盒子上的 <b class="trace-num">' + step.myValue + '</b></div>' +
+      '<div class="trace-eq">= ？</div>' +
+      '</div>' +
+      '</div>';
     document.getElementById('backtrack-zone').innerHTML =
-      values.map(v => '<button class="num-btn" data-v="' + v + '">' + v + '</button>').join('');
-    document.querySelectorAll('[data-v]').forEach(btn => {
+      step.options.map(v => '<button class="num-btn" data-opt="' + v + '">' + v + '</button>').join('');
+    document.querySelectorAll('[data-opt]').forEach(btn => {
       btn.addEventListener('click', () => {
-        const v = Number(btn.dataset.v);
         if (g.isDone) return;
-        if (g.submitNext(v)) {
-          btn.classList.add('used');
+        if (g.submitTrace(Number(btn.dataset.opt))) {
           playSound('correct');
           if (g.isDone) { playSound('win'); onWin(); }
+          else renderTraceStep();
         } else {
           playSound('wrong');
-          setFeedback('顺序不对哦，想想谁是最里面的？', 'no');
+          setFeedback('再算算？里面传来 ' + step.innerResult + '，加上 ' + step.myValue + ' 是多少？', 'no');
         }
       });
     });
@@ -177,7 +219,8 @@
   // ---------- 结算 ----------
   function onWin() {
     const stats = state.game.getStats();
-    setHint('🎉 拆完啦！' + '⭐'.repeat(stats.stars));
+    setHint('🎉 拆完啦！' + '⭐'.repeat(stats.stars) +
+      (state.surprises.length ? ' 收集了 ' + state.surprises.join('') : ''));
     document.getElementById('animal-face').classList.add('celebrate');
     setTimeout(() => document.getElementById('animal-face').classList.remove('celebrate'), 700);
     showRecord(stats.stars, stats.mistakes);
@@ -188,10 +231,12 @@
     showScreen('screen-stats');
     document.getElementById('stats-title').textContent = '拆完啦！' + '⭐'.repeat(stats.stars);
     document.getElementById('stats-box').innerHTML =
-      '<div class="big">一共 ' + stats.layers + ' 层套娃</div>' +
+      '<div class="big">一共 ' + stats.layers + ' 层盒子，答案 ' + stats.finalResult + '</div>' +
       '<div>错误：' + stats.mistakes + ' 次</div>' +
-      '<div>🐻 小秘密：拆的时候一层层记住（压栈），数回来的时候从最里面开始（弹栈）——这就是递归！</div>' +
-      '<div>最小的空娃娃 = 基线：没有它，套娃就永远拆不完。</div>';
+      (state.surprises.length ? '<div>惊喜收集：' + state.surprises.join(' ') + '</div>' : '') +
+      '<div>🐻 递归小秘密：</div>' +
+      '<div>拆 = 一路往下问；空盒 = 基线（返回 0）；</div>' +
+      '<div>数回来 = 答案一层层往外传（这就是递归！）</div>';
   }
 
   function recordKey() { return 'nest-best-' + state.mode + '-' + state.animal; }
@@ -211,8 +256,8 @@
   }
 
   function updateStatus() {
-    const g = state.game;
-    document.getElementById('steps').textContent = '拆开 ' + g.openedCount + '/' + g.layers + ' 层';
+    document.getElementById('steps').textContent =
+      '拆开 ' + state.game.openedCount + '/' + state.game.layers + ' 层';
   }
 
   function setFeedback(msg, cls) {
