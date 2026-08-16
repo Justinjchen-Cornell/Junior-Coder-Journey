@@ -119,6 +119,9 @@ body {
   border-radius: 16px; padding: 8px 14px; margin: 6px auto; font-weight: 800;
   font-size: 1.02rem; color: #8a6a1f; max-width: 560px;
 }
+.node .start-badge {
+  font-size: 13px; text-anchor: middle; font-weight: 900; fill: #2e7d32;
+}
 .node .target-badge {
   font-size: 16px; text-anchor: middle; font-weight: 900;
   animation: badge-glow 1s ease infinite alternate;

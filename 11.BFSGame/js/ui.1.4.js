@@ -113,22 +113,24 @@
           '" x2="' + pos[b].x + '" y2="' + pos[b].y + '"></line>';
       }
     }
-    // 节点：全部可见！目标是 ❓（会做冰淇淋的神秘朋友）
+    // 节点：全部可见！目标是 ❓（会做冰淇淋的神秘朋友）；起点是 🐒（第 0 圈）
     let nodes = '';
     for (let i = 0; i < g.nodeCount; i++) {
       const p = pos[i];
       const isTarget = i === g.target;
-      nodes += '<g class="node" data-node="' + i + '" transform="translate(' + p.x + ',' + p.y + ')">' +
+      const isStart = i === g.start;
+      nodes += '<g class="node' + (isStart ? ' start-node' : '') + '" data-node="' + i + '" transform="translate(' + p.x + ',' + p.y + ')">' +
         '<circle r="26"></circle>' +
-        '<text class="face" y="-2">' + (isTarget ? '❓' : FOREST_FACES[i % FOREST_FACES.length]) + '</text>' +
+        '<text class="face" y="-2">' + (isTarget ? '❓' : (isStart ? '🐒' : FOREST_FACES[i % FOREST_FACES.length])) + '</text>' +
         (isTarget ? '<text class="target-badge" y="-38">🍨</text>' : '') +
+        (isStart ? '<text class="start-badge" y="-38">第 0 圈 · 起点</text>' : '') +
         '</g>';
     }
     document.getElementById('forest').innerHTML =
       '<svg viewBox="0 0 ' + W + ' ' + H + '">' + lines + nodes + '</svg>';
     state.pos = pos;   // 记录坐标（画最短路径用）
     const badge = document.getElementById('ring-badge');
-    if (badge) badge.textContent = '🌊 第 0 圈（起点）';
+    if (badge) badge.textContent = '🌊 还没扩散';
     // 起点亮起
     revealNode(g.start, true);
   }

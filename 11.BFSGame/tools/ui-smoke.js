@@ -20,6 +20,7 @@ const URL = 'file:///' + path.resolve(__dirname, '..', 'index.html').split(path.
   check('目标❓标记可见', await page.$('.target-badge') !== null);
   check('任务横幅显示', await page.$('#mission') !== null);
   check('起点已亮', await page.$('[data-node="0"].found') !== null);
+  check('起点标记在节点上方', await page.$('[data-node="0"] .start-badge') !== null);
   check('预言三选一出现', (await page.$$('.predict-opt')).length === 3);
   // 提交预言（读正确选项）
   await page.evaluate(() => {
