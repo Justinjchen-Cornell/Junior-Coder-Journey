@@ -1,7 +1,7 @@
 // 《小猴子找朋友》核心逻辑测试（BFS）
 const test = require('node:test');
 const assert = require('node:assert');
-const { createBFSGame } = require('../js/game.1.0.js');
+const { createBFSGame } = require('../js/game.1.1.js');
 
 test('初始化：宝宝 6-8 节点，目标不在起点，图连通', () => {
   const g = createBFSGame('baby');
@@ -100,4 +100,25 @@ test('reset：恢复初始', () => {
   g.reset();
   assert.strictEqual(g.getStats().steps, 0);
   assert.ok(!g.isDone);
+});
+test('最短路径：起点到目标，相邻节点有边，长度 = 圈数', () => {
+  const g = createBFSGame('baby');
+  while (!g.isDone) g.expand();
+  const path = g.getShortestPath();
+  assert.ok(path !== null);
+  assert.strictEqual(path[0], g.start);
+  assert.strictEqual(path[path.length - 1], g.target);
+  // 相邻节点必须有边
+  for (let i = 0; i < path.length - 1; i++) {
+    assert.ok(g.graph[path[i]].includes(path[i + 1]));
+  }
+  // 路径边数 = 圈数（最短步数）
+  assert.strictEqual(path.length - 1, g.foundLevel);
+});
+
+test('猜中后也能拿到最短路径', () => {
+  const g = createBFSGame('challenge');
+  g.guess(g.target);
+  const path = g.getShortestPath();
+  assert.ok(path !== null && path[path.length - 1] === g.target);
 });

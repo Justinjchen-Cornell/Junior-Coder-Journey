@@ -84,6 +84,7 @@ function createBFSGame(mode) {
   let foundLevel = null;
   let mistakes = 0;
   let guessed = false;
+  const parent = new Map();   // 首次发现时的父节点（BFS 最短路径树）
 
   function expand() {
     if (isDone()) return null;
@@ -95,6 +96,7 @@ function createBFSGame(mode) {
       for (const nb of graph[cur]) {
         if (!visited.has(nb)) {
           visited.add(nb);
+          parent.set(nb, cur);
           next.push(nb);
           nextQ.push(nb);
           if (nb === target) foundLevel = currentLevel;
@@ -103,6 +105,18 @@ function createBFSGame(mode) {
     }
     queue = nextQ;
     return { level: currentLevel, nodes: next };
+  }
+
+  function getShortestPath() {
+    // 从 target 沿父节点回溯到 start = BFS 最短路径
+    if (foundLevel === null && !guessed) return null;
+    const path = [];
+    let cur = target;
+    while (cur !== undefined) {
+      path.push(cur);
+      cur = parent.get(cur);
+    }
+    return path.reverse();
   }
 
   function guess(id) {
@@ -142,6 +156,7 @@ function createBFSGame(mode) {
     foundLevel = null;
     mistakes = 0;
     guessed = false;
+    parent.clear();
   }
 
   return {
@@ -149,7 +164,7 @@ function createBFSGame(mode) {
     get isDone() { return isDone(); },
     get foundLevel() { return foundLevel; },
     get mistakes() { return mistakes; },
-    expand, guess, bfsLevelOf, starsFor, getStats, reset,
+    expand, guess, bfsLevelOf, getShortestPath, starsFor, getStats, reset,
   };
 }
 

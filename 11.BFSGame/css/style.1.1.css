@@ -112,3 +112,23 @@ body {
   .animal-picker button { width: 64px; height: 64px; font-size: 1.9rem; }
   .title { font-size: 1.5rem; }
 }
+
+/* v1.1 目标明确化 */
+.mission {
+  text-align: center; background: #fff3cd; border: 3px solid #ffd54f;
+  border-radius: 16px; padding: 8px 14px; margin: 6px auto; font-weight: 800;
+  font-size: 1.02rem; color: #8a6a1f; max-width: 560px;
+}
+.node .target-badge {
+  font-size: 16px; text-anchor: middle; font-weight: 900;
+  animation: badge-glow 1s ease infinite alternate;
+}
+@keyframes badge-glow { from { opacity: .6; } to { opacity: 1; } }
+
+/* v1.1 最短路径金线 */
+.path-line {
+  stroke: #ffd54f; stroke-width: 5; stroke-linecap: round;
+  stroke-dasharray: 12 8; filter: drop-shadow(0 0 6px rgba(255,213,79,.9));
+  animation: path-flow 1s linear infinite;
+}
+@keyframes path-flow { to { stroke-dashoffset: -20; } }

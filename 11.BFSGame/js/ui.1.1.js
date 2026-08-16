@@ -62,7 +62,8 @@
     document.getElementById('animal-face').textContent = state.animal;
     showScreen('screen-game');
     renderForest();
-    setHint('按「扩散」按钮，一圈圈找会做冰淇淋的朋友！');
+    setMission();
+    setHint('按「扩散」按钮，看波纹一圈圈靠近 ❓！');
     setFeedback('', '');
     document.getElementById('record').textContent = '';
     updateStatus();
@@ -106,26 +107,34 @@
           '" x2="' + pos[b].x + '" y2="' + pos[b].y + '"></line>';
       }
     }
-    // 节点
+    // 节点：全部可见！目标是 ❓（会做冰淇淋的神秘朋友）
     let nodes = '';
     for (let i = 0; i < g.nodeCount; i++) {
       const p = pos[i];
-      nodes += '<g class="node hidden" data-node="' + i + '" transform="translate(' + p.x + ',' + p.y + ')">' +
+      const isTarget = i === g.target;
+      nodes += '<g class="node" data-node="' + i + '" transform="translate(' + p.x + ',' + p.y + ')">' +
         '<circle r="26"></circle>' +
-        '<text class="face" y="-2">' + FOREST_FACES[i % FOREST_FACES.length] + '</text>' +
+        '<text class="face" y="-2">' + (isTarget ? '❓' : FOREST_FACES[i % FOREST_FACES.length]) + '</text>' +
+        (isTarget ? '<text class="target-badge" y="42">🍨</text>' : '') +
         '</g>';
     }
     document.getElementById('forest').innerHTML =
       '<svg viewBox="0 0 ' + W + ' ' + H + '">' + lines + nodes + '</svg>' +
       '<div class="ring-badge" id="ring-badge">🌊 第 0 圈（起点）</div>';
+    state.pos = pos;   // 记录坐标（画最短路径用）
     // 起点亮起
     revealNode(g.start, true);
+  }
+
+  function setMission() {
+    const g = state.game;
+    document.getElementById('mission').textContent =
+      '🎯 目标：❓ 会做冰淇淋的朋友（🍨）！找到它，小猴就能吃到冰淇淋！';
   }
 
   function revealNode(id, isStart) {
     const el = document.querySelector('[data-node="' + id + '"]');
     if (!el) return;
-    el.classList.remove('hidden');
     el.classList.add(isStart ? 'found' : 'wave');
   }
 
@@ -143,12 +152,14 @@
     const r = g.expand();
     if (!r) return;
     revealWave(r.nodes, r.level);
-    setHint('第 ' + r.level + ' 圈亮了！看看谁在发光～');
+    if (r.nodes.includes(g.target)) {
+      setHint('🌟 第 ' + r.level + ' 圈亮到 ❓ 了！');
+      revealTarget();
+      return;
+    }
+    setHint('第 ' + r.level + ' 圈亮了！❓ 还没出现，继续扩散～');
     playSound('correct');
     updateStatus();
-    if (r.nodes.includes(g.target)) {
-      revealTarget();
-    }
   }
 
   function revealTarget() {
@@ -158,13 +169,35 @@
       el.classList.add('found');
       el.classList.remove('wave');
       el.innerHTML = '<circle r="30"></circle>' +
-        '<text class="face" y="-2">🍨</text>';
+        '<text class="face" y="-2">' + FOREST_FACES[g.target % FOREST_FACES.length] + '</text>' +
+        '<text class="target-badge" y="44">🍨</text>';
     }
     playSound('win');
-    setHint('🎉 第 ' + g.foundLevel + ' 圈找到它了！= ' + g.foundLevel + ' 步（最短！）');
+    drawShortestPath();
+    setHint('🎉 找到啦！它' + FOREST_FACES[g.target % FOREST_FACES.length] + '会做冰淇淋！' +
+      '第 ' + g.foundLevel + ' 圈 = ' + g.foundLevel + ' 步（最短！）');
+    setFeedback('🐒 小猴吃到冰淇淋啦！😋', 'ok');
+    document.getElementById('mission').textContent =
+      '✅ 找到 ❓ = ' + FOREST_FACES[g.target % FOREST_FACES.length] + '！小猴吃到冰淇淋啦！🎉';
     document.getElementById('btn-expand').style.display = 'none';
     document.getElementById('btn-guess').style.display = 'none';
-    setTimeout(finishWin, 900);
+    setTimeout(finishWin, 1200);
+  }
+
+  function drawShortestPath() {
+    // 最短路径金线：从起点连到目标（虚线流动动画）
+    const g = state.game;
+    const path = g.getShortestPath();
+    if (!path || !state.pos) return;
+    let pl = '';
+    for (let i = 0; i < path.length - 1; i++) {
+      const a = state.pos[path[i]];
+      const b = state.pos[path[i + 1]];
+      pl += '<line class="path-line" x1="' + a.x + '" y1="' + a.y +
+        '" x2="' + b.x + '" y2="' + b.y + '"></line>';
+    }
+    const svg = document.querySelector('.forest svg');
+    if (svg) svg.insertAdjacentHTML('beforeend', pl);
   }
 
   // ---------- 挑战：猜目标 ----------

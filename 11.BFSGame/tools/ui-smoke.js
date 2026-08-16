@@ -17,6 +17,8 @@ const URL = 'file:///' + path.resolve(__dirname, '..', 'index.html').split(path.
 
   // 宝宝模式：UI 接线 + 钩子通关
   check('森林图渲染', await page.$('.forest svg') !== null);
+  check('目标❓标记可见', await page.$('.target-badge') !== null);
+  check('任务横幅显示', await page.$('#mission') !== null);
   check('起点已亮', await page.$('[data-node="0"].found') !== null);
   check('扩散按钮', await page.$('#btn-expand') !== null);
 
@@ -28,6 +30,20 @@ const URL = 'file:///' + path.resolve(__dirname, '..', 'index.html').split(path.
   });
   check('宝宝钩子通关', baby.done);
   check('圈数 = 最短步数', baby.steps === baby.found);
+  // 真实 UI 流：重开一局，点「扩散」按钮直到找到目标 → 验证最短路径金线
+  await page.click('#btn-reset');
+  for (let i = 0; i < 20; i++) {
+    const hint = await page.$eval('#hint', el => el.textContent);
+    if (hint.includes('找到啦')) break;
+    const btn = await page.$('#btn-expand');
+    if (!btn || !await btn.isVisible()) break;
+    await page.click('#btn-expand');
+  }
+  await page.waitForTimeout(400);
+  const hint2 = await page.$eval('#hint', el => el.textContent);
+  check('UI 按钮流找到目标', hint2.includes('找到啦'));
+  check('最短路径金线出现', (await page.$$('.forest .path-line')).length >= 1);
+  check('目标揭晓为小动物', await page.$('.node.found .target-badge') !== null);
 
   // 挑战模式：猜目标
   await page.click('#btn-home');
