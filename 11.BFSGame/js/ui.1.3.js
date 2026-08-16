@@ -81,20 +81,24 @@
   // ---------- SVG 森林图 ----------
   function renderForest() {
     const g = state.game;
-    const W = 720, H = 340;
+    const W = 760, H0 = 360;
     const levels = g.levels;   // [{id, level}]
     const maxLevel = Math.max(...levels.map(l => l.level));
-    const pos = {};
-    // 分层布局：x = 80 + level*130，y 均匀散布
     const levelGroups = {};
     levels.forEach(l => {
       (levelGroups[l.level] = levelGroups[l.level] || []).push(l.id);
     });
+    const maxCount = Math.max(...Object.values(levelGroups).map(a => a.length));
+    // 动态间距：按层级数和每层最多节点数自适应（保证不出画布）
+    const xStep = Math.min(150, (W - 150) / Math.max(maxLevel, 1));
+    const yStep = Math.min(80, (H0 - 70) / Math.max(maxCount, 1));
+    const H = Math.max(H0, 100 + maxCount * yStep);
+    const pos = {};
     Object.keys(levelGroups).forEach(lv => {
       const ids = levelGroups[lv];
       ids.forEach((id, i) => {
-        const y = H / 2 + (i - (ids.length - 1) / 2) * 72;
-        pos[id] = { x: 80 + Number(lv) * 130, y };
+        const y = H / 2 + (i - (ids.length - 1) / 2) * yStep;
+        pos[id] = { x: 75 + Number(lv) * xStep, y };
       });
     });
     // 连线（BFS 树边 + 其他边）
@@ -117,13 +121,14 @@
       nodes += '<g class="node" data-node="' + i + '" transform="translate(' + p.x + ',' + p.y + ')">' +
         '<circle r="26"></circle>' +
         '<text class="face" y="-2">' + (isTarget ? '❓' : FOREST_FACES[i % FOREST_FACES.length]) + '</text>' +
-        (isTarget ? '<text class="target-badge" y="42">🍨</text>' : '') +
+        (isTarget ? '<text class="target-badge" y="-38">🍨</text>' : '') +
         '</g>';
     }
     document.getElementById('forest').innerHTML =
-      '<svg viewBox="0 0 ' + W + ' ' + H + '">' + lines + nodes + '</svg>' +
-      '<div class="ring-badge" id="ring-badge">🌊 第 0 圈（起点）</div>';
+      '<svg viewBox="0 0 ' + W + ' ' + H + '">' + lines + nodes + '</svg>';
     state.pos = pos;   // 记录坐标（画最短路径用）
+    const badge = document.getElementById('ring-badge');
+    if (badge) badge.textContent = '🌊 第 0 圈（起点）';
     // 起点亮起
     revealNode(g.start, true);
   }
@@ -170,6 +175,12 @@
     playSound('pop');
   }
 
+  function updateRing() {
+    const g = state.game;
+    const badge = document.getElementById('ring-badge');
+    if (badge) badge.textContent = '🌊 已扩散 ' + g.getStats().steps + ' 圈';
+  }
+
   // ---------- 扩散 ----------
   function onExpand() {
     const g = state.game;
@@ -195,7 +206,7 @@
       el.classList.remove('wave');
       el.innerHTML = '<circle r="30"></circle>' +
         '<text class="face" y="-2">' + FOREST_FACES[g.target % FOREST_FACES.length] + '</text>' +
-        '<text class="target-badge" y="44">🍨</text>';
+        '<text class="target-badge" y="-38">🍨</text>';
     }
     playSound('win');
     drawShortestPath();

@@ -56,10 +56,25 @@ const URL = 'file:///' + path.resolve(__dirname, '..', 'index.html').split(path.
   check('最短路径金线出现', (await page.$$('.forest .path-line')).length >= 1);
   check('目标揭晓为小动物', await page.$('.node.found .target-badge') !== null);
 
-  // 挑战模式：猜目标
+  // 挑战模式：猜目标 + 布局越界检查
   await page.click('#btn-home');
   await page.click('.mode-btn.challenge');
   check('挑战节点 ≥12', (await page.$$('.forest .node')).length >= 12);
+  const bounds = await page.evaluate(() => {
+    const svg = document.querySelector('.forest svg');
+    const vb = svg.viewBox.baseVal;
+    const out = [];
+    document.querySelectorAll('.forest .node').forEach(g => {
+      const t = g.getAttribute('transform');
+      const m = t.match(/translate\((\d+(?:\.\d+)?),(\d+(?:\.\d+)?)\)/);
+      if (m) {
+        const x = Number(m[1]), y = Number(m[2]);
+        if (x < 0 || y < 0 || x > vb.width || y > vb.height) out.push(x + ',' + y);
+      }
+    });
+    return { out, vb: vb.width + 'x' + vb.height };
+  });
+  check('挑战布局无越界（' + bounds.vb + '）', bounds.out.length === 0);
   const ch = await page.evaluate(() => {
     const g = window.__game;
     const ok = g.guess(g.target);

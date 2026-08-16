@@ -38,8 +38,9 @@ body {
 .status-line { display: flex; gap: 10px; align-items: center; margin-top: 4px; font-size: .9rem; flex-wrap: wrap; }
 
 /* 森林图 */
-.forest { position: relative; min-height: 320px; margin: 8px 0; }
+.forest { position: relative; min-height: 280px; margin: 8px 0; overflow: hidden; }
 .forest svg { width: 100%; height: auto; display: block; }
+.node text { pointer-events: none; }
 .node-line { stroke: #8a9a6a; stroke-width: 2.5; }
 .node {
   cursor: default; transition: opacity .3s;
@@ -64,11 +65,10 @@ body {
   100% { transform: scale(1); }
 }
 
-/* 圈数徽章 */
+/* 圈数徽章（头部状态栏内） */
 .ring-badge {
-  position: absolute; top: 8px; right: 8px; background: #fff;
-  border: 3px solid #5c9cff; border-radius: 18px; padding: 4px 14px;
-  font-weight: 900; color: #5c9cff; font-size: 1rem;
+  background: #fff; border: 2px solid #5c9cff; border-radius: 12px;
+  padding: 1px 10px; font-weight: 900; color: #5c9cff; font-size: .85rem;
 }
 
 /* 扩散按钮 */
