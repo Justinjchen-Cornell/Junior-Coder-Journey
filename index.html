@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🎡 小动物森林 · 算法游乐场</title>
+<style>
+  :root { --ink: #3a2e1f; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: "PingFang SC", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+    color: var(--ink);
+    background: linear-gradient(180deg, #8fd0ff 0%, #cdeaff 35%, #fff8ec 75%, #b8e6b8 100%);
+    min-height: 100vh; overflow-x: hidden;
+  }
+  .container { max-width: 980px; margin: 0 auto; padding: 24px 16px 40px; }
+  .hero { text-align: center; padding: 30px 0 10px; }
+  .hero .sky { font-size: 2.2rem; letter-spacing: 10px; animation: floaty 3s ease-in-out infinite; display: inline-block; }
+  @keyframes floaty { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+  .hero h1 { font-size: 2.6rem; margin-top: 8px; text-shadow: 3px 3px 0 rgba(255,255,255,.7); }
+  .hero p { font-size: 1.15rem; color: #5a4a35; margin-top: 6px; }
+  .hero .badge {
+    display: inline-block; margin-top: 14px; background: #fff; border: 3px solid #ffd54f;
+    border-radius: 30px; padding: 6px 20px; font-size: .95rem; font-weight: 700;
+    box-shadow: 0 4px 10px rgba(0,0,0,.12);
+  }
+  .hero .badge span { animation: blink 1.2s ease infinite; }
+  @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: .35; } }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 18px; margin-top: 28px; }
+  .card {
+    position: relative; display: flex; flex-direction: column; align-items: center;
+    text-align: center; padding: 22px 14px 18px; border-radius: 24px; cursor: pointer;
+    text-decoration: none; color: var(--ink);
+    border: 4px solid var(--c);
+    background: linear-gradient(160deg, #ffffff 0%, var(--bg, #fff8e7) 100%);
+    box-shadow: 0 6px 16px rgba(0,0,0,.12);
+    transition: transform .18s ease, box-shadow .18s ease;
+  }
+  .card:hover { transform: translateY(-6px) rotate(-1deg); box-shadow: 0 12px 24px rgba(0,0,0,.18); }
+  .card:active { transform: scale(.97); }
+  .sticker {
+    width: 86px; height: 86px; border-radius: 50%; font-size: 2.8rem;
+    background: #fff; border: 4px solid var(--c);
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 4px 10px rgba(0,0,0,.12); transition: transform .2s;
+  }
+  .card:hover .sticker { transform: scale(1.12) rotate(8deg); }
+  .card h3 { font-size: 1.25rem; margin-top: 12px; }
+  .card .chapter { font-size: .8rem; font-weight: 700; color: var(--c); margin-top: 4px; letter-spacing: 1px; }
+  .card .desc { font-size: .92rem; color: #6b5a45; margin-top: 6px; line-height: 1.5; min-height: 2.4em; }
+  .play-btn {
+    margin-top: 12px; background: var(--c); color: #fff; border: none;
+    border-radius: 24px; padding: 8px 22px; font-size: 1rem; font-weight: 800;
+    box-shadow: 0 3px 8px rgba(0,0,0,.18); letter-spacing: 1px;
+  }
+  .card:hover .play-btn { animation: wiggle .5s ease; }
+  @keyframes wiggle { 0%,100% { transform: rotate(0); } 25% { transform: rotate(-6deg); } 75% { transform: rotate(6deg); } }
+  .card.soon { border-style: dashed; opacity: .85; cursor: default; filter: saturate(.55); }
+  .card.soon:hover { transform: none; box-shadow: 0 6px 16px rgba(0,0,0,.12); }
+  .card.soon .play-btn { background: #b8b0a0; }
+  .soon-tag {
+    position: absolute; top: -12px; right: -8px; background: #ff8fb3;
+    color: #fff; font-size: .75rem; font-weight: 800; border-radius: 14px;
+    padding: 3px 12px; transform: rotate(8deg); box-shadow: 0 2px 6px rgba(0,0,0,.2); letter-spacing: 1px;
+  }
+  .soon-tag span { animation: blink 1.6s ease infinite; }
+  .new-tag {
+    position: absolute; top: -12px; left: -8px; background: #ffd54f; color: #6b4a2b;
+    font-size: .75rem; font-weight: 800; border-radius: 14px; padding: 3px 12px;
+    transform: rotate(-8deg); box-shadow: 0 2px 6px rgba(0,0,0,.2); letter-spacing: 1px;
+  }
+  .footer {
+    margin-top: 44px; text-align: center; font-size: .95rem; color: #5a4a35;
+    background: rgba(255,255,255,.65); border-radius: 20px; padding: 16px;
+    border: 3px dashed #ffd54f;
+  }
+  .footer .journey { font-weight: 800; font-size: 1.05rem; margin-top: 6px; }
+  @media (max-width: 520px) {
+    .hero h1 { font-size: 1.8rem; }
+    .grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .card { padding: 16px 8px 14px; }
+    .sticker { width: 64px; height: 64px; font-size: 2rem; }
+    .card h3 { font-size: 1rem; }
+    .card .desc { font-size: .8rem; }
+    .play-btn { padding: 6px 14px; font-size: .88rem; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="hero">
+    <div class="sky">☁️🐿️☁️🐻☁️🦊☁️</div>
+    <h1>🎡 小动物森林 · 算法游乐场</h1>
+    <p>小宥宥的思维训练乐园 —— 玩着玩着，就学会了</p>
+    <div class="badge">🧸 爸爸和小宥宥一起玩 <span>●</span></div>
+  </div>
+
+  <div class="grid" id="game-grid">
+    <!-- 已上线 -->
+    <a class="card" style="--c:#ff8a50;--bg:#ffe9d9" href="06.BinarySearchGame/">
+      <span class="new-tag">⭐ 第 1 个</span>
+      <div class="sticker">🐿️</div>
+      <h3>猜猜小动物在哪里</h3>
+      <div class="chapter">第 1 章 · 二分查找</div>
+      <div class="desc">小动物躲猫猫！猜中间，最多 7 次就找到！</div>
+      <span class="play-btn">开始玩 ▶</span>
+    </a>
+
+    <a class="card" style="--c:#ff8fb3;--bg:#ffe4ec" href="07.SelectionSortGame/">
+      <span class="new-tag">⭐ 第 2 个</span>
+      <div class="sticker">🍦</div>
+      <h3>排队买冰淇淋</h3>
+      <div class="chapter">第 2 章 · 选择排序</div>
+      <div class="desc">谁最矮？点它进队！排到整整齐齐！</div>
+      <span class="play-btn">开始玩 ▶</span>
+    </a>
+
+    <a class="card" style="--c:#9b7bff;--bg:#efe9ff" href="08.RecursionGame/">
+      <span class="new-tag">🆕 最新</span>
+      <div class="sticker">🪆</div>
+      <h3>套娃拆拆乐</h3>
+      <div class="chapter">第 3 章 · 递归</div>
+      <div class="desc">一层层拆到空娃娃，再数回来！</div>
+      <span class="play-btn">开始玩 ▶</span>
+    </a>
+
+    <!-- 敬请期待 -->
+    <div class="card soon" style="--c:#9aa5b1;--bg:#f0f2f4">
+      <span class="soon-tag"><span>✧</span> 敬请期待 <span>✧</span></span>
+      <div class="sticker">📚</div>
+      <h3>书架整理员</h3>
+      <div class="chapter">第 4 章 · 快速排序</div>
+      <div class="desc">分两堆，再分两堆——书架就整齐啦！</div>
+      <span class="play-btn">施工中…</span>
+    </div>
+
+    <div class="card soon" style="--c:#9aa5b1;--bg:#f0f2f4">
+      <span class="soon-tag"><span>✧</span> 敬请期待 <span>✧</span></span>
+      <div class="sticker">🔐</div>
+      <h3>小动物储物柜</h3>
+      <div class="chapter">第 5 章 · 哈希表</div>
+      <div class="desc">每个东西都有柜号，一下就能找到！</div>
+      <span class="play-btn">施工中…</span>
+    </div>
+
+    <div class="card soon" style="--c:#9aa5b1;--bg:#f0f2f4">
+      <span class="soon-tag"><span>✧</span> 敬请期待 <span>✧</span></span>
+      <div class="sticker">🐒</div>
+      <h3>小猴子找朋友</h3>
+      <div class="chapter">第 6 章 · BFS 广度优先</div>
+      <div class="desc">一圈一圈问，最近的朋友先碰到！</div>
+      <span class="play-btn">施工中…</span>
+    </div>
+
+    <div class="card soon" style="--c:#9aa5b1;--bg:#f0f2f4">
+      <span class="soon-tag"><span>✧</span> 敬请期待 <span>✧</span></span>
+      <div class="sticker">🐷</div>
+      <h3>小猪省钱路</h3>
+      <div class="chapter">第 7 章 · Dijkstra</div>
+      <div class="desc">每次都去最便宜的一站！</div>
+      <span class="play-btn">施工中…</span>
+    </div>
+
+    <div class="card soon" style="--c:#9aa5b1;--bg:#f0f2f4">
+      <span class="soon-tag"><span>✧</span> 敬请期待 <span>✧</span></span>
+      <div class="sticker">📡</div>
+      <h3>盖广播塔</h3>
+      <div class="chapter">第 8 章 · 贪心算法</div>
+      <div class="desc">最少的塔，盖住所有村庄！</div>
+      <span class="play-btn">施工中…</span>
+    </div>
+
+    <div class="card soon" style="--c:#9aa5b1;--bg:#f0f2f4">
+      <span class="soon-tag"><span>✧</span> 敬请期待 <span>✧</span></span>
+      <div class="sticker">🐿️</div>
+      <h3>小松鼠装松果</h3>
+      <div class="chapter">第 9 章 · 动态规划</div>
+      <div class="desc">篮子只有这么大，怎么装最划算？</div>
+      <span class="play-btn">施工中…</span>
+    </div>
+
+    <div class="card soon" style="--c:#9aa5b1;--bg:#f0f2f4">
+      <span class="soon-tag"><span>✧</span> 敬请期待 <span>✧</span></span>
+      <div class="sticker">🔮</div>
+      <h3>猜猜它是谁</h3>
+      <div class="chapter">第 10 章 · KNN 最近邻</div>
+      <div class="desc">看它最像谁，就是谁！</div>
+      <span class="play-btn">施工中…</span>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div>🐾 每一关都是爸爸亲手做的 —— 先玩到，再懂它</div>
+    <div class="journey">🧸 爸爸 × 小宥宥 · 15 年编程之约 · 第 1 年进行中 💙</div>
+  </div>
+</div>
+</body>
+</html>
