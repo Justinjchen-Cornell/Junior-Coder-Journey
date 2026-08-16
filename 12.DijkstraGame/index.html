@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>蚂蚁找食物 🐜</title>
+  <link rel="stylesheet" href="css/style.1.0.css">
+</head>
+<body class="">
+<script>if (location.search.includes('fast=1')) document.body.className = 'fast';</script>
+  <div id="app">
+    <section id="screen-start" class="screen active">
+      <a class="btn-portal-mini" href="../index.html">🎡 回游乐场</a>
+      <h1 class="title">🐜 蚂蚁找食物</h1>
+      <p class="subtitle">野餐垫上掉了西瓜 🍉！点亮点指挥聪明蚂蚁，别让莽撞蚂蚁抢先！</p>
+      <div class="level-picker" id="level-picker">
+        <button class="level-btn" data-level="1">🌱 第 1 关<br><small>4 个路口 · 学走路</small></button>
+        <button class="level-btn" data-level="2">🌿 第 2 关<br><small>6 个路口 · 有陷阱</small></button>
+        <button class="level-btn" data-level="3">🌳 第 3 关<br><small>8 个路口 · 大挑战</small></button>
+      </div>
+      <div class="record-line" id="record-line"></div>
+    </section>
+
+    <section id="screen-game" class="screen">
+      <header class="game-header">
+        <span class="animal-face" id="animal-face">🐜</span>
+        <div class="header-info">
+          <div class="hint" id="hint">点亮点（金色呼吸光）指挥蚂蚁！</div>
+          <div class="status-line">
+            <span class="steps" id="steps"></span>
+            <span class="record" id="record"></span>
+          </div>
+        </div>
+      </header>
+
+      <div class="mission" id="mission">🎯 蚂蚁要从 🐜 蚁穴 到 🍉 西瓜，步数最少！</div>
+
+      <div class="map" id="map"></div>
+
+      <div class="feedback" id="feedback"></div>
+      <button class="btn-reset" id="btn-reset">🔄 重走这关</button>
+      <button class="btn-home" id="btn-home">🏠 选关卡</button>
+    </section>
+
+    <section id="screen-stats" class="screen">
+      <h2 class="stats-title" id="stats-title">到西瓜啦！</h2>
+      <div class="reward-card" id="stats-reward" style="display:none"></div>
+      <div class="race-card" id="race-card"></div>
+      <div class="stats-box" id="stats-box"></div>
+      <button class="btn-next" id="btn-next">下一关 ▶</button>
+      <button class="btn-reset" id="btn-stats-reset">🔄 重玩这关</button>
+      <button class="btn-home" id="btn-stats-home">🏠 选关卡</button>
+      <a class="btn-portal" href="../index.html">🎡 回游乐场</a>
+    </section>
+  </div>
+  <script src="js/game.1.0.js"></script>
+  <script src="js/ui.1.0.js"></script>
+</body>
+</html>
