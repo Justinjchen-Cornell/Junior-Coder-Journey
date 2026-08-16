@@ -1,59 +1,84 @@
 # 🧸 Junior Coder Journey · 父子编程之旅
 
 > **一个小宥宥，一个老爸，一份 15 年的约定。**
-> 开始于 2026 年夏天，小宥宥 3 岁半。那天，老爸决定把"编程"这件小事，
+> 开始于 2026 年夏天，小宥宥 3 岁半。老爸决定把"编程"这件小事，
 > 变成父子俩一起玩的漫长游戏。🎮
+>
+> *类型：亲子成长记录 + 算法启蒙 + 网页游戏*
 
 ---
 
-## 👦 我们是谁
+## 🎯 这个项目能给你什么？
 
-| | 谁 | 角色 |
-|---|---|---|
-| 🐟 | **小宥宥** | 3 岁半 · 总指挥官（指令他下，错误他背，功劳他领） |
-| 👨 | **老爸** | 42 岁 · 头号"执行机器人"（听指令，会犯错，挨批评） |
-| 🤖 | **小机器人** | 每周一 9:00 准时敲门的提醒器（它从不忘记） |
+**如果你是家长（想给孩子做编程启蒙）：**
+- 🧸 [亲子课堂 · 10 本睡前算法故事书](./05.AlgorithmFromScratch/亲子课堂/) —— 3 岁就能听，每本含"3岁故事 + 5-7岁动手游戏 + 爸爸版详解"
+- 🎮 [10 个网页游戏（零安装，点开即玩）](#-现在就能玩) —— 每个算法一个游戏，宝宝/挑战双模式
+- 📓 [爸爸的陪伴日志](./01.episodes/) —— 真实家庭的记录样本，看看别人家怎么玩
 
-## 📜 我们的约定
+**如果你是教育者/老师：**
+- 📚 [算法训练营 10 章](./05.AlgorithmFromScratch/) —— 每章：参考实现/从零实现/单元测试/实测数据/教给别人笔记
+- 🧩 每个算法的"亲子化三件套"：睡前故事 + 动手游戏 + 网页游戏（详见亲子课堂）
+
+**如果你是开发者：**
+- 🎮 [网页游戏源码](./06.BinarySearchGame/) —— 纯 HTML/CSS/JS 零依赖，TDD 开发，版本化文件名
+- 🤝 [参与贡献](./CONTRIBUTING.md) —— 活动卡/故事/游戏/翻译都可以
+- 🔓 [开源许可](./LICENSE) —— CC BY-NC 4.0（家庭和教育可自由使用）
+
+## 🗺️ 15 年路线图
+
+| 阶段 | 年龄 | 核心任务 | 本仓库对应 |
+|---|---|---|---|
+| 🌱 无屏期 | 3-6 | 指令游戏·地板机器人·睡前故事 | 亲子课堂故事、episodes 日志 |
+| 🎨 图形化期 | 5-8 | ScratchJr/Scratch·亲子协作 | 10 个网页游戏的挑战模式 |
+| ⌨️ 代码期 | 8+ | Python·算法·实战 | 算法训练营 10 章 |
+| 🤝 共创期 | 15+ | 小宥宥接手仓库 | 移交（待发生） |
+
+> 📍 我们现在在这里：🌱 无屏期（第 1 周，2026 年夏）
+
+## 🎮 现在就能玩（10 个游戏，零安装）
+
+> 全部部署在 GitHub Pages，手机/平板/电脑点开即玩，无需任何安装。
+
+| # | 游戏 | 算法 | 地址 |
+|---|------|------|------|
+| 1 | 🐿️ 猜猜小动物在哪里 | 二分查找 | [玩](https://justinjchen-cornell.github.io/Junior-Coder-Journey/06.BinarySearchGame/) |
+| 2 | 🍦 排队买冰淇淋 | 选择排序 | [玩](https://justinjchen-cornell.github.io/Junior-Coder-Journey/07.SelectionSortGame/) |
+| 3 | 🪆 套娃拆拆乐 | 递归 | [玩](https://justinjchen-cornell.github.io/Junior-Coder-Journey/08.RecursionGame/) |
+| 4 | 📚 书架整理员 | 快速排序 | [玩](https://justinjchen-cornell.github.io/Junior-Coder-Journey/09.QuickSortGame/) |
+| 5 | 🔐 小动物储物柜 | 哈希表 | [玩](https://justinjchen-cornell.github.io/Junior-Coder-Journey/10.HashTableGame/) |
+| 6 | 🐒 小猴子找朋友 | BFS 广度优先 | [玩](https://justinjchen-cornell.github.io/Junior-Coder-Journey/11.BFSGame/) |
+| 7 | 🐜 蚂蚁找食物 | Dijkstra | [玩](https://justinjchen-cornell.github.io/Junior-Coder-Journey/12.DijkstraGame/) |
+| 8 | 📡 盖广播塔 | 贪心算法 | [玩](https://justinjchen-cornell.github.io/Junior-Coder-Journey/13.TowerGame/) |
+| 9 | 🐿️ 小松鼠装松果 | 动态规划 | [玩](https://justinjchen-cornell.github.io/Junior-Coder-Journey/14.DPGame/) |
+| 10 | 🔮 猜猜它是谁 | KNN 最近邻 | [玩](https://justinjchen-cornell.github.io/Junior-Coder-Journey/15.KNNGame/) |
+
+> 🎡 游戏馆入口（含"敬请期待"进度墙）：[小动物森林 · 算法游乐场](https://justinjchen-cornell.github.io/Junior-Coder-Journey/)
+
+## 📦 仓库里有什么
+
+| 目录 | 是什么 |
+|---|---|
+| 📓 `01.episodes/` | 每周一集的成长日记（5 行记录 + 开心指数） |
+| 🖼️ `02.artifacts/` | 作品博物馆 |
+| 🏅 `03.milestones/` | 徽章墙与大事记 |
+| 📚 `04.playbook/` | 爸爸的带娃秘籍 |
+| 🧠 `05.AlgorithmFromScratch/` | 爸爸的算法训练营（10 章毕业）+ 亲子课堂（10 本故事书） |
+| 🎮 `06~15.*Game/` | 10 个网页游戏（对应 10 章算法） |
+| 🔧 `tools/` | 小工具（周记录模板生成器） |
+
+## 🤝 参与进来
+
+- 📖 [贡献指南](./CONTRIBUTING.md) · 🕊️ [行为准则](./CODE_OF_CONDUCT.md) · 🔓 [许可协议](./LICENSE)
+- 🆕 想提建议/报 bug？用 [Issue 模板](https://github.com/Justinjchen-Cornell/Junior-Coder-Journey/issues/new/choose)
+- 📈 项目进度与成长记录：[PROGRESS.md](./PROGRESS.md)（每季度更新）
+
+## 📜 我们的约定（README 的灵魂，保留）
 
 1. 🎈 **陪伴第一，记录第二**——先玩够 10 分钟，再写 15 分钟
 2. 🚫 **不考试、不比较、不纠错**——错了？那是"机器人听错了"
 3. 🌱 **断更可以，弃坑不行**——漏了 4 周？不补、不内疚，从这周重新开始
-4. ⭐ **唯一的 KPI 是开心指数**——星星是画给你看的，不是成绩
-5. 🔑 **你 18 岁那天，这里全部归你**——包括删除权
-
-## 🗺️ 我们的旅程地图
-
-```
-🌱 无屏期 ──► 🐢 地板机器人 ──► 🎨 ScratchJr ──► 🐱 Scratch ──► 🐍 Python
-  3.5岁       4 岁           4.5 岁          5.5 岁          7 岁+
-  📖故事+游戏   🐞走路的积木   🎬 你导演我执行   🧩 独立创作     ⌨️ 正式入门
-```
-
-**📍 我们目前在这里：🌱 无屏期**（睡前故事 + 指令游戏 + 地板机器人）
-
-## 📦 仓库里有什么
-
-| 目录 | 是什么 | 现在 |
-|---|---|---|
-| 📓 `01.episodes/` | 每周一集的成长日记（5 行记录 + 开心指数） | 第 1 集已上线 🎉 |
-| 🖼️ `02.artifacts/` | 作品博物馆（打码照片 / 项目文件） | 等第一件展品 |
-| 🏅 `03.milestones/` | 徽章墙（升到新阶段就贴一枚） | 🌱 刚刚开始 |
-| 📚 `04.playbook/` | 老爸的带娃秘籍（玩过有效的才收录） | 等第一招 |
-| 🧠 `05.AlgorithmFromScratch/` | **老爸的算法训练营**——《算法图解》10 章全部亲手实现 + 验证 | 🎓 已毕业！ |
-| 🧸 `05.AlgorithmFromScratch/亲子课堂/` | 10 本"睡前算法故事书"（3岁故事 / 5-7岁游戏 / 老爸版） | 📖 10/10 可讲 |
-| 🔧 `tools/` | 小工具（每周记录模板生成器） | 随时待命 |
-| 🐿️ `06.BinarySearchGame/` | **《猜猜小动物在哪里》**——给小宥宥的二分法网页游戏（宝宝/挑战双模式） | 🎮 可玩！ |
-| 🍦 `07.SelectionSortGame/` | **《排队买冰淇淋》**——选择排序思维游戏（👀 扫描动画 + 数字爆炸彩蛋） | 🎮 可玩！ |
-| 🪆 `08.RecursionGame/` | **《套娃拆拆乐》**——递归思维游戏（拆=压栈 / 数回来=弹栈 / 空娃娃=基线） | 🎮 可玩！ |
-
-## 🕐 每周仪式（老爸 15 分钟）
-
-```bash
-python tools/new_week.py "主题"     # 1️⃣ 小机器人生成空模板（周一它还会发 Issue 催）
-# 2️⃣ 打开 01.episodes/ 填空：玩了什么 / 反应 / 观察 / 下周调整 / ⭐
-git add -A && git commit -m "episode: W34 乌龟棋" && git push   # 3️⃣ 合上，收工
-```
+4. ⭐ **唯一的 KPI 是开心指数**
+5. 🔑 **小宥宥 18 岁那天，这里全部归他**——包括删除权
 
 ## 💌 写给 18 岁的小宥宥
 
