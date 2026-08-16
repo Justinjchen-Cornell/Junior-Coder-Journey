@@ -86,7 +86,44 @@ function createBFSGame(mode) {
   let guessed = false;
   let predicted = null;       // 预言的第几圈
   let predictionCorrect = false;
+  let waveTotal = 0, waveCorrect = 0, wavePredicted = null;   // 每圈预言
   const parent = new Map();   // 首次发现时的父节点（BFS 最短路径树）
+
+  function nextWaveCount() {
+    // 下一圈的新朋友数（纯计算，不改状态）
+    const cand = new Set();
+    for (const cur of queue) {
+      for (const nb of graph[cur]) {
+        if (!visited.has(nb)) cand.add(nb);
+      }
+    }
+    return cand.size;
+  }
+
+  // 每圈预言：猜"这圈会亮几个新朋友"（3 选 1）
+  function getWaveOptions() {
+    if (isDone()) return null;
+    const correct = nextWaveCount();
+    const uniq = [];
+    [correct, correct + 1, correct - 1].forEach(v => {
+      if (v >= 0 && !uniq.includes(v)) uniq.push(v);
+    });
+    let pad = correct + 2;
+    while (uniq.length < 3) {
+      if (!uniq.includes(pad)) uniq.push(pad);
+      pad++;
+    }
+    shuffle(uniq);
+    return { correct, options: uniq.slice(0, 3) };
+  }
+
+  function submitWaveGuess(n) {
+    if (wavePredicted !== null || isDone()) return false;
+    waveTotal++;
+    wavePredicted = n;
+    if (n === nextWaveCount()) { waveCorrect++; return true; }
+    return false;
+  }
 
   function expand() {
     if (isDone()) return null;
@@ -168,7 +205,11 @@ function createBFSGame(mode) {
   function getStats() {
     return {
       steps: foundLevel === null ? currentLevel : foundLevel,
-      mistakes, stars: predictionCorrect ? 3 : (starsFor(mistakes) >= 3 ? 2 : starsFor(mistakes)),
+      mistakes,
+      stars: waveTotal && waveCorrect === waveTotal ? 3
+        : (waveTotal && waveCorrect >= waveTotal - 1 ? 2
+          : (predictionCorrect ? 3 : (starsFor(mistakes) >= 3 ? 2 : starsFor(mistakes)))),
+      waveTotal, waveCorrect,
       target, nodeCount: n,
       predictionCorrect, predicted,
     };
@@ -183,6 +224,7 @@ function createBFSGame(mode) {
     guessed = false;
     predicted = null;
     predictionCorrect = false;
+    waveTotal = 0; waveCorrect = 0; wavePredicted = null;
     parent.clear();
   }
 
@@ -192,6 +234,7 @@ function createBFSGame(mode) {
     get foundLevel() { return foundLevel; },
     get mistakes() { return mistakes; },
     expand, guess, bfsLevelOf, getShortestPath,
+    getWaveOptions, submitWaveGuess,
     predictionOptions, submitPrediction,
     get predicted() { return predicted; },
     get predictionCorrect() { return predictionCorrect; },

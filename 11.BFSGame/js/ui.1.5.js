@@ -59,6 +59,7 @@
     state.mode = mode || 'baby';
     state.game = createBFSGame(state.mode);
     window.__game = state.game;
+    state.waveGuessed = false;
     document.getElementById('animal-face').textContent = state.animal;
     showScreen('screen-game');
     renderForest();
@@ -183,8 +184,42 @@
     if (badge) badge.textContent = '🌊 已扩散 ' + g.getStats().steps + ' 圈';
   }
 
-  // ---------- 扩散 ----------
+  // ---------- 扩散（先猜再扩：每圈一个决策） ----------
   function onExpand() {
+    const g = state.game;
+    if (g.isDone) return;
+    if (!state.waveGuessed) {
+      renderWaveGuess();   // 先猜"这圈几个新朋友"
+      return;
+    }
+    doExpand();
+  }
+
+  // 每圈预言：猜"这圈会亮几个新朋友"
+  function renderWaveGuess() {
+    const g = state.game;
+    if (state.waveGuessed || g.isDone) return;
+    const wo = g.getWaveOptions();
+    if (!wo) return;
+    document.getElementById('guess-zone').innerHTML =
+      '<div class="predict-hint">🧐 猜猜：这一圈会亮几个新朋友？</div>' +
+      '<div class="chain-items">' +
+      wo.options.map(o => '<div class="predict-opt" data-wg="' + o + '">' + o + ' 个！</div>').join('') +
+      '</div>';
+    document.querySelectorAll('[data-wg]').forEach(opt => {
+      opt.addEventListener('click', () => {
+        const n = Number(opt.dataset.wg);
+        const ok = g.submitWaveGuess(n);
+        state.waveGuessed = true;
+        playSound(ok ? 'correct' : 'pop');
+        document.getElementById('guess-zone').innerHTML =
+          '<div class="predict-result">📣 预言 ' + n + ' 个' + (ok ? '（对啦！🌟）' : '……看结果！') + '</div>';
+        doExpand();
+      });
+    });
+  }
+
+  function doExpand() {
     const g = state.game;
     if (g.isDone) return;
     const r = g.expand();
@@ -195,9 +230,12 @@
       revealTarget();
       return;
     }
-    setHint('第 ' + r.level + ' 圈亮了！❓ 还没出现，继续扩散～');
+    const st = g.getStats();
+    setHint('第 ' + r.level + ' 圈亮了 ' + r.nodes.length + ' 个新朋友！' +
+      (st.waveCorrect > 0 ? ' 🌟预言+' + st.waveCorrect : '') + ' 继续猜～');
     playSound('correct');
     updateStatus();
+    state.waveGuessed = false;
   }
 
   function revealTarget() {

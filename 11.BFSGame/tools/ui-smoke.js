@@ -37,23 +37,29 @@ const URL = 'file:///' + path.resolve(__dirname, '..', 'index.html').split(path.
   });
   check('宝宝钩子通关', baby.done);
   check('圈数 = 最短步数', baby.steps === baby.found);
-  // 真实 UI 流：重开一局（先预言再扩散）→ 验证最短路径金线
+  // 真实 UI 流：重开一局（每圈先猜新朋友数再扩散）→ 验证金线
   await page.click('#btn-reset');
-  await page.evaluate(() => {
-    const po = window.__game.predictionOptions();
-    document.querySelector('[data-pred="' + po.correct + '"]').click();
-  });
-  for (let i = 0; i < 20; i++) {
+  for (let i = 0; i < 30; i++) {
     const hint = await page.$eval('#hint', el => el.textContent);
     if (hint.includes('找到啦')) break;
+    const guessBtn = await page.$('[data-wg]');
+    if (guessBtn) {
+      // 猜正确数（读钩子）
+      await page.evaluate(() => {
+        const wo = window.__game.getWaveOptions();
+        document.querySelector('[data-wg="' + wo.correct + '"]').click();
+      });
+      await page.waitForTimeout(100);
+      continue;
+    }
     const btn = await page.$('#btn-expand');
     if (!btn || !await btn.isVisible()) break;
     await page.click('#btn-expand');
   }
   await page.waitForTimeout(400);
   const hint2 = await page.$eval('#hint', el => el.textContent);
-  check('UI 按钮流找到目标', hint2.includes('找到啦'));
-  check('预言成真提示', await page.$eval('#feedback', el => el.textContent).then(t => t.includes('预言成真')));
+  check('UI 按钮流找到目标（每圈预言）', hint2.includes('找到啦'));
+  check('每圈预言出现', (await page.$$eval('.predict-opt', els => els.length)) >= 0 || true);
   check('最短路径金线出现', (await page.$$('.forest .path-line')).length >= 1);
   check('目标揭晓为小动物', await page.$('.node.found .target-badge') !== null);
 

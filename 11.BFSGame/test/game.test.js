@@ -1,7 +1,7 @@
 // 《小猴子找朋友》核心逻辑测试（BFS）
 const test = require('node:test');
 const assert = require('node:assert');
-const { createBFSGame } = require('../js/game.1.4.js');
+const { createBFSGame } = require('../js/game.1.5.js');
 
 test('初始化：宝宝 6-8 节点，目标不在起点，图连通', () => {
   const g = createBFSGame('baby');
@@ -158,4 +158,29 @@ test('预言：只能提交一次', () => {
   const po = g.predictionOptions();
   g.submitPrediction(po.correct);
   assert.strictEqual(g.submitPrediction(po.correct), false);
+});
+test('每圈预言：选项含正确数；猜对累计；全对 3 星', () => {
+  const g = createBFSGame('baby');
+  let guard = 0;
+  while (!g.isDone && guard++ < 20) {
+    const wo = g.getWaveOptions();
+    assert.ok(wo !== null && wo.options.includes(wo.correct));
+    g.submitWaveGuess(wo.correct);
+    g.expand();
+  }
+  const s = g.getStats();
+  assert.ok(s.waveTotal >= 1);
+  assert.strictEqual(s.waveCorrect, s.waveTotal);
+  assert.strictEqual(s.stars, 3);
+});
+
+test('每圈预言：猜错 → 星级降级但不阻塞', () => {
+  const g = createBFSGame('baby');
+  const wo = g.getWaveOptions();
+  const wrong = wo.options.find(o => o !== wo.correct);
+  g.submitWaveGuess(wrong);
+  while (!g.isDone) g.expand();
+  const s = g.getStats();
+  assert.strictEqual(s.waveCorrect, 0);
+  assert.ok(s.stars <= 2);
 });
