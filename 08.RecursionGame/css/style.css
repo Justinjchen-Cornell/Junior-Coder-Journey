@@ -1,0 +1,109 @@
+/* 套娃拆拆乐 · 卡通风格（小动物森林世界观） */
+:root {
+  --cream: #fff6e5;
+  --pink: #ff8fb3;
+  --gold: #ffd54f;
+  --choco: #6b4a2b;
+  --ink: #3a2e1f;
+  --green: #6ec96e;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  font-family: "PingFang SC", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+  background: linear-gradient(180deg, #ffe3b3 0%, var(--cream) 60%, #b8e6b8 100%);
+  color: var(--ink); user-select: none; -webkit-tap-highlight-color: transparent;
+  overflow-x: hidden;
+}
+#app { max-width: 760px; margin: 0 auto; padding: 12px; min-height: 100vh; }
+.screen { display: none; }
+.screen.active { display: block; }
+
+.title { text-align: center; font-size: 2rem; margin: 18px 0 4px; text-shadow: 2px 2px 0 rgba(255,255,255,.6); }
+.subtitle { text-align: center; font-size: 1.05rem; margin-bottom: 16px; color: #8a6a3f; }
+.animal-picker { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin: 18px 0; }
+.animal-picker button {
+  font-size: 2.4rem; width: 84px; height: 84px; border-radius: 50%;
+  border: 4px solid var(--choco); background: #fff; cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0,0,0,.18); transition: transform .15s;
+}
+.animal-picker button:active { transform: scale(.9); }
+.mode-picker { display: flex; gap: 14px; justify-content: center; margin-top: 22px; }
+.mode-btn {
+  font-size: 1.15rem; padding: 16px 22px; border-radius: 20px;
+  border: 4px solid var(--choco); cursor: pointer; background: #fff;
+  box-shadow: 0 4px 8px rgba(0,0,0,.18);
+}
+.mode-btn small { display: block; font-size: .8rem; color: #8a7a5f; margin-top: 4px; }
+.mode-btn.baby { border-color: var(--pink); }
+.mode-btn.challenge { border-color: #5c9cff; }
+
+.game-header { display: flex; align-items: center; gap: 12px; margin: 10px 0; }
+.animal-face { font-size: 2.6rem; background: #fff; border-radius: 50%; width: 66px; height: 66px;
+  display: flex; align-items: center; justify-content: center; border: 4px solid var(--choco); }
+.header-info { flex: 1; }
+.hint { font-size: 1.1rem; font-weight: 700; }
+.status-line { display: flex; gap: 10px; align-items: center; margin-top: 4px; font-size: .9rem; flex-wrap: wrap; }
+
+/* 套娃展示区 */
+.nest-zone { min-height: 300px; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 0; }
+.doll {
+  font-size: 6rem; line-height: 1; text-align: center;
+  transition: transform .3s ease, opacity .3s ease;
+  transform-origin: bottom center;
+}
+.doll.small { font-size: 4.5rem; }
+.doll.tiny { font-size: 3rem; }
+.doll.micro { font-size: 1.8rem; }
+.doll.base { font-size: 1.2rem; animation: base-glow 1s ease infinite alternate; }
+@keyframes base-glow { from { opacity: .5; transform: scale(.9); } to { opacity: 1; transform: scale(1.1); } }
+@keyframes open-pop { 0% { transform: scale(.3); opacity: 0; } 70% { transform: scale(1.25); } 100% { transform: scale(1); opacity: 1; } }
+.doll.reveal { animation: open-pop .45s ease; }
+.layer-tag {
+  background: #fff; border: 3px solid var(--gold); border-radius: 16px;
+  font-size: 1.4rem; font-weight: 800; padding: 2px 14px; margin-top: 6px;
+  animation: open-pop .4s ease;
+}
+
+/* 操作区 */
+.action-zone { text-align: center; margin: 14px 0; }
+.btn-open {
+  font-size: 1.3rem; padding: 16px 44px; border-radius: 22px;
+  border: 4px solid var(--choco); background: #fff; cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0,0,0,.2);
+}
+.btn-open:active { transform: scale(.94); }
+
+/* 回溯区 */
+.backtrack-zone { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin: 10px 0; }
+.num-btn {
+  min-width: 54px; min-height: 54px; border-radius: 14px; font-size: 1.2rem; font-weight: 700;
+  border: 3px solid var(--choco); background: #fff; cursor: pointer;
+  box-shadow: 0 3px 6px rgba(0,0,0,.15);
+}
+.num-btn:active { transform: scale(.92); }
+.num-btn.used { opacity: .3; pointer-events: none; }
+
+.feedback { text-align: center; font-size: 1.35rem; font-weight: 800; min-height: 2.2rem; margin: 8px 0; }
+.feedback.ok { color: #2e7d32; }
+.feedback.no { color: #d32f2f; }
+
+.btn-reset, .btn-home {
+  display: block; margin: 10px auto; padding: 13px 26px; font-size: 1.05rem;
+  border-radius: 18px; border: 3px solid var(--choco); cursor: pointer;
+  background: #fff; box-shadow: 0 4px 8px rgba(0,0,0,.18);
+}
+.btn-home { background: #ffe9d6; }
+
+.stats-title { text-align: center; margin: 20px 0 10px; }
+.stats-box { background: rgba(255,255,255,.85); border-radius: 18px; padding: 16px; margin: 12px 0; font-size: 1.05rem; line-height: 2; }
+.stats-box .big { font-size: 1.4rem; font-weight: 800; }
+
+@media (max-width: 480px) {
+  .animal-picker button { width: 64px; height: 64px; font-size: 1.9rem; }
+  .doll { font-size: 4.5rem; }
+  .doll.small { font-size: 3.4rem; }
+  .doll.tiny { font-size: 2.2rem; }
+  .doll.micro { font-size: 1.4rem; }
+  .title { font-size: 1.5rem; }
+}
