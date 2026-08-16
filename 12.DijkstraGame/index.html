@@ -3,26 +3,27 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>工程队送货路 🚜</title>
-  <link rel="stylesheet" href="css/style.1.2.css">
+  <title>小猪省钱路 🐷</title>
+  <link rel="stylesheet" href="css/style.1.3.css">
 </head>
 <body class="">
 <script>if (location.search.includes('fast=1')) document.body.className = 'fast';</script>
   <div id="app">
     <section id="screen-animal" class="screen active">
       <a class="btn-portal-mini" href="../index.html">🎡 回游乐场</a>
-      <h1 class="title">🚜 工程队送货路</h1>
-      <p class="subtitle">小佑佑的工程队要送材料到工地！地图上标了公里数，找最近的路！</p>
+      <h1 class="title">🐷 小猪省钱路</h1>
+      <p class="subtitle">小猪从家去学校！每条路要花硬币，帮它找到最省的路！</p>
       <div class="animal-picker" id="animal-picker"></div>
       <div class="mode-picker" id="mode-picker">
         <button class="mode-btn baby" data-mode="baby">🍼 宝宝模式<br><small>走路数硬币</small></button>
         <button class="mode-btn challenge" data-mode="challenge">🚀 挑战模式<br><small>Dijkstra 操作台</small></button>
+        <button class="mode-btn team" data-mode="team">🚜 工程队送货<br><small>神奇的本子</small></button>
       </div>
     </section>
 
     <section id="screen-game" class="screen">
       <header class="game-header">
-        <span class="animal-face" id="animal-face">🚜</span>
+        <span class="animal-face" id="animal-face">🐷</span>
         <div class="header-info">
           <div class="hint" id="hint">选择路线，帮小猪省钱！</div>
           <div class="status-line">
@@ -32,7 +33,7 @@
         </div>
       </header>
 
-      <div class="mission" id="mission">🎯 从 🚜 基地 到 🏗️ 工地，公里数最少！</div>
+      <div class="mission" id="mission">🎯 从 🏠 家 到 🏫 学校，硬币最少！</div>
 
       <!-- 神奇的本子（优先队列） -->
       <div class="notebook" id="notebook">
@@ -58,7 +59,7 @@
       <a class="btn-portal" href="../index.html">🎡 回游乐场</a>
     </section>
   </div>
-  <script src="js/game.1.2.js"></script>
-  <script src="js/ui.1.2.js"></script>
+  <script src="js/game.1.3.js"></script>
+  <script src="js/ui.1.3.js"></script>
 </body>
 </html>

@@ -11,7 +11,7 @@ const URL = 'file:///' + path.resolve(__dirname, '..', 'index.html').split(path.
   const check = (name, cond) => { log.push(`${cond ? '✅' : '❌'} ${name}`); if (!cond) process.exitCode = 1; };
 
   await page.goto(URL);
-  check('标题', (await page.title()) === '工程队送货路 🚜');
+  check('标题', (await page.title()) === '小猪省钱路 🐷');
   await page.click('[data-animal="🐰"]');
   await page.click('.mode-btn.baby');
 
@@ -70,7 +70,25 @@ const URL = 'file:///' + path.resolve(__dirname, '..', 'index.html').split(path.
   check('总价 = 最优（非负权保证）', ch.total === ch.optimal);
   check('零错误', ch.mistakes === 0);
 
+  // --- 🚜 工程队送货模式（神奇的本子） ---
+  await page.click('#btn-home');
+  await page.click('.mode-btn.team');
+  check('工程队任务横幅', (await page.$eval('#mission', el => el.textContent)).includes('工地'));
+  check('神奇的本子出现', await page.$('#notebook') !== null);
+  const team = await page.evaluate(() => {
+    const g = window.__game;
+    let guard = 0;
+    while (!g.isDone && guard++ < 200) {
+      const nb = g.getNotebook();
+      if (!nb.length) break;
+      g.pickStation(nb[0].id);
+    }
+    return { done: g.isDone, total: g.getStats().totalCost, optimal: g.getStats().optimal };
+  });
+  check('工程队本子驱动通关', team.done);
+  check('工程队总价 = 最优', team.total === team.optimal);
+
   console.log(log.join('\n'));
   await browser.close();
-  console.log(process.exitCode ? '\n有失败项 ❌' : '\n工程队送货路冒烟全部通过 🎉');
+  console.log(process.exitCode ? '\n有失败项 ❌' : '\n小猪省钱路冒烟全部通过 🎉');
 })();

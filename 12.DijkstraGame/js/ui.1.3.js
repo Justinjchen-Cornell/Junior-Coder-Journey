@@ -3,7 +3,18 @@
   'use strict';
 
   const ANIMALS = ['🐰', '🐻', '🦊', '🐱', '🐸'];
-  const STATION_FACES = ['🚜', '🚧', '🏭', '🏢', '⛽', '📦', '🏗️', '🛠️'];
+  const PIG_FACES = ['🏠', '🐭', '🐰', '🦊', '🐻', '🐨', '🐷', '🏫'];
+  const TEAM_FACES = ['🚜', '🚧', '🏭', '🏢', '⛽', '📦', '🏗️', '🛠️'];
+  function isTeam() { return state.mode === 'team'; }
+  function unitName() { return isTeam() ? '公里' : '硬币'; }
+  function startFace() { return isTeam() ? '🚜' : '🏠'; }
+  function endFace() { return isTeam() ? '🏗️' : '🏫'; }
+  function stationFace(id) {
+    const g = state.game;
+    if (id === g.start) return startFace();
+    if (id === g.end) return endFace();
+    return (isTeam() ? TEAM_FACES : PIG_FACES)[id % 8];
+  }
   const state = { mode: 'baby', animal: '🐷', game: null, pos: null };
 
   let audioCtx = null;
@@ -57,7 +68,10 @@
     state.mode = mode || 'baby';
     state.game = createPigGame(state.mode);
     window.__game = state.game;
-    document.getElementById('animal-face').textContent = state.animal;
+    document.getElementById('animal-face').textContent = isTeam() ? '🚜' : '🐷';
+    document.getElementById('mission').textContent = isTeam()
+      ? '🎯 从 🚜 基地 到 🏗️ 工地，公里数最少！'
+      : '🎯 从 🏠 家 到 🏫 学校，硬币最少！';
     showScreen('screen-game');
     renderMap();
     updateUI();
@@ -113,7 +127,7 @@
     let stations = '';
     for (let i = 0; i < n; i++) {
       const p = pos[i];
-      const face = i === g.start ? '🏠' : (i === g.end ? '🏫' : STATION_FACES[i % STATION_FACES.length]);
+      const face = stationFace(i);
       stations += '<g class="station" data-station="' + i + '" transform="translate(' + p.x + ',' + p.y + ')">' +
         '<circle r="28"></circle>' +
         '<text class="face" y="-1">' + face + '</text>' +
@@ -146,9 +160,9 @@
     });
     const steps = document.getElementById('steps');
     steps.textContent = state.mode === 'baby'
-      ? '已走 ' + g.currentTotal + ' 公里'
+      ? '已花 ' + g.currentTotal + ' ' + unitName()
       : '已定案 ' + panel.filter(p => p.processed).length + ' 站';
-    if (state.mode === 'challenge') renderNotebook();
+    if (isTeam()) renderNotebook();
   }
 
   // 神奇的本子：未定案已发现基地，按公里数升序，第一行高亮
@@ -194,7 +208,7 @@
       if (ok) {
         playSound('correct');
         const e = g.edges.find(e => (e.a === g.currentNode && e.b === id) || (e.a === id && e.b === g.currentNode));
-        setFeedback('走了 ' + (e ? e.w : '?') + ' 公里！', 'ok');
+        setFeedback((isTeam() ? '走了 ' : '花了 ') + (e ? e.w : '?') + ' ' + unitName() + '！', 'ok');
         if (g.isDone) finishWin();
         else updateUI();
       } else {
@@ -210,19 +224,20 @@
         updateUI();
       } else {
         playSound('wrong');
-        const nb = g.getNotebook();
-        const top = nb.length ? nb[0] : null;
-        setFeedback(top
-          ? '翻开本子看看？' + faceOf(top.id) + '（' + top.cost + ' 公里）最近，先处理它！'
-          : '本子上还没有基地，先处理别的站！', 'no');
+        if (isTeam()) {
+          const nb = g.getNotebook();
+          const top = nb.length ? nb[0] : null;
+          setFeedback(top
+            ? '翻开本子看看？' + faceOf(top.id) + '（' + top.cost + ' ' + unitName() + '）最近，先处理它！'
+            : '本子上还没有基地，先处理别的站！', 'no');
+        } else {
+          setFeedback('要选"价格最小"的站哦！看看哪个数字最小？', 'no');
+        }
       }
     }
   }
 
-  function faceOf(id) {
-    const g = state.game;
-    return id === g.start ? '🚜' : (id === g.end ? '🏗️' : STATION_FACES[id % STATION_FACES.length]);
-  }
+  function faceOf(id) { return stationFace(id); }
 
   // ---------- 结算 ----------
   function finishWin() {
@@ -232,7 +247,9 @@
     document.getElementById('animal-face').classList.add('celebrate');
     setTimeout(() => document.getElementById('animal-face').classList.remove('celebrate'), 700);
     if (state.mode === 'challenge') drawShortestPath();
-    setHint('🎉 材料送到工地！总路程 ' + stats.totalCost + ' 公里！');
+    setHint(isTeam()
+      ? '🎉 材料送到工地！总路程 ' + stats.totalCost + ' 公里！'
+      : '🎉 到学校啦！花了 ' + stats.totalCost + ' 个硬币！');
     showRecord(stats.stars, state.mode === 'baby' ? stats.totalCost : stats.mistakes);
     showStatsPage(stats);
   }
@@ -263,12 +280,15 @@
         '<div class="reward-text">' + praise + '</div>';
     }
     const modeMsg = state.mode === 'challenge'
-      ? '<div>🐻 小秘密：本子把最近的基地排最前，每次都处理第一行（贪心），到了就更新邻居公里数（松弛）——这就是 Dijkstra！</div>' +
-        '<div>💡 如果有一条路"倒贴公里"（负权），这个方法会失灵——现实世界没有这种路！</div>'
-      : '<div>🐻 最优路线只要 ' + stats.optimal + ' 公里' + (isOpt ? '——你找到啦！🌟' : '（你走了 ' + stats.totalCost + '）——金线画出来啦，下次走这条！') + '</div>';
+      ? '<div>🐻 小秘密：每次都去"最便宜的一站"（贪心），到了就更新邻居的价格（松弛）——这就是 Dijkstra！</div>' +
+        '<div>💡 如果有一条路"倒贴' + unitName() + '"（负权），这个方法会失灵——现实世界没有这种路！</div>'
+      : (isTeam()
+        ? '<div>🐻 本子把最近的基地排最前（优先队列），处理第一行 + 松弛重排 = Dijkstra！</div>' +
+          '<div>最优路线只要 ' + stats.optimal + ' 公里' + (isOpt ? '——你找到啦！🌟' : '（你走了 ' + stats.totalCost + '）——金线画出来啦！') + '</div>'
+        : '<div>🐻 最优路线只要 ' + stats.optimal + ' 个硬币' + (isOpt ? '——你找到啦！🌟' : '（你花了 ' + stats.totalCost + '）——金线画出来啦，下次走这条！') + '</div>');
     document.getElementById('stats-box').innerHTML =
-      '<div class="big">走了 ' + stats.totalCost + ' 公里' + (isOpt ? '（最优！🌟）' : '') + '</div>' +
-      '<div>最优只要：' + stats.optimal + ' 公里</div>' +
+      '<div class="big">' + (isTeam() ? '走了 ' : '花了 ') + stats.totalCost + ' ' + unitName() + (isOpt ? '（最优！🌟）' : '') + '</div>' +
+      '<div>最优只要：' + stats.optimal + ' ' + unitName() + '</div>' +
       (state.mode === 'challenge' ? '<div>错误：' + stats.mistakes + ' 次</div>' : '') +
       modeMsg;
   }
@@ -281,7 +301,7 @@
     const prev = Number(localStorage.getItem(key) || 0);
     if (prev === 0 || score < prev) {
       localStorage.setItem(key, String(score));
-      el.textContent = '🏆 新纪录！' + score + (state.mode === 'baby' ? ' 公里' : ' 错误');
+      el.textContent = '🏆 新纪录！' + score + (state.mode === 'baby' ? ' ' + unitName() : ' 错误');
       el.style.color = '#ff7043';
     } else {
       el.textContent = '最佳 ' + prev;

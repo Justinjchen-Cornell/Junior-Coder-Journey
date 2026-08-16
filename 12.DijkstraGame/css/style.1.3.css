@@ -123,3 +123,5 @@ body {
 @keyframes top-bob { 0%,100% { transform: translateX(0); } 50% { transform: translateX(4px); } }
 .nb-row .nb-km.flash { animation: km-flash .8s ease; color: #ff8a50; }
 @keyframes km-flash { 0% { transform: scale(2); color: #ff8a50; } 100% { transform: scale(1); } }
+
+.mode-btn.team { border-color: #ff8a50; }
