@@ -1,7 +1,7 @@
 // 《盖广播塔》核心逻辑测试（贪心/集合覆盖）
 const test = require('node:test');
 const assert = require('node:assert');
-const { createTowerGame } = require('../js/game.1.0.js');
+const { createTowerGame } = require('../js/game.1.1.js');
 
 test('三关结构：村庄/塔数量正确', () => {
   const spec = { 1: [5, 4], 2: [8, 6], 3: [12, 8] };

@@ -163,21 +163,21 @@
       rewardEl.innerHTML = '<div class="confetti"><span>🎉</span><span>⭐</span><span>✨</span><span>🎊</span><span>🌟</span></div>' +
         '<div class="reward-text">' + praise + '</div>';
     }
-    const trapMsg = s.greedyCount > s.optimalCount
-      ? (s.towersUsed === s.optimalCount
-        ? '<div class="big">🌟 你没被大塔骗！用了 ' + s.optimalCount + ' 座（最优）！</div>' +
-          '<div>贪心（每次都选最多的）会用 ' + s.greedyCount + ' 座——你比贪心还聪明！</div>'
-        : '<div class="big">你用了 ' + s.towersUsed + ' 座（贪心会用 ' + s.greedyCount + ' 座）</div>' +
-          '<div>💡 最优其实只要 ' + s.optimalCount + ' 座！先盖大塔反而吃亏——贪心被骗啦！</div>')
-      : (isOpt
-        ? '<div class="big">🌟 你用了 ' + s.towersUsed + ' 座 = 最优！贪心直觉正确！</div>'
-        : '<div class="big">你用了 ' + s.towersUsed + ' 座，最优只要 ' + s.optimalCount + ' 座</div>');
+    // 三重对比（始终显示三行：你的 / 贪心 / 最优）
+    const trapMsg =
+      '<div class="big">🟢 你用了 ' + s.towersUsed + ' 座塔</div>' +
+      '<div class="greedy-line">🟠 贪心（每次都选最多的）会用 ' + s.greedyCount + ' 座</div>' +
+      '<div class="opt-line">🟡 最优只要 ' + s.optimalCount + ' 座</div>' +
+      (isOpt
+        ? '<div class="big">🌟 你就是最优解！</div>'
+        : (s.greedyCount > s.optimalCount
+          ? '<div>💡 先盖大塔反而吃亏——贪心被骗啦！看下面的金圈！</div>'
+          : '<div>💡 差一点！看看金圈里的最优组合～</div>'));
     document.getElementById('race-card').innerHTML = trapMsg;
     document.getElementById('stats-box').innerHTML =
-      '<div>最优塔组合：第 ' + s.optimalTowers.map(t => t + 1).join('、') + ' 座塔（金圈 ⭕）</div>' +
       '<div>🐻 小秘密：每次都选"覆盖最多"的塔 = 贪心——大多数时候刚好最优，但第 2/3 关它会翻车！</div>' +
       '<div>这就是为什么有些问题（NP 完全）连电脑也只能"差不多"——工程上接受近似！</div>';
-    highlightOptimalTowers(s);
+    renderMiniMap(s);
     const btnNext = document.getElementById('btn-next');
     btnNext.style.display = state.level < 3 ? 'block' : 'none';
     if (state.level >= 3) {
@@ -185,17 +185,25 @@
     }
   }
 
-  function highlightOptimalTowers(s) {
-    // 结算后回到地图标记最优塔（金圈）——简单提示文字已显示，地图高亮最优塔
-    const zone = document.getElementById('tower-zone');
-    if (!zone) return;
-    zone.querySelectorAll('.tower-btn').forEach(btn => {
-      const id = Number(btn.dataset.tower);
-      if (s.optimalTowers.includes(id)) {
-        btn.style.borderColor = '#ffd54f';
-        btn.style.boxShadow = '0 0 14px rgba(255,213,79,.9)';
-      }
-    });
+  // 结算迷你地图：你的塔（绿）/ 贪心塔（橙虚线）/ 最优塔（金圈）同屏可见
+  function renderMiniMap(s) {
+    const g = state.game;
+    const el = document.getElementById('mini-map');
+    if (!el) return;
+    const villages = g.villages.map(v =>
+      '<div class="mm-village' + (g.covered.has(v) ? ' covered' : '') + '">' +
+      VILLAGE_FACES[v % VILLAGE_FACES.length] + '</div>').join('');
+    const towers = g.towers.map(t => {
+      let cls = 'mm-tower';
+      if (s.optimalTowers.includes(t.id)) cls += ' optimal';
+      if (s.greedyTowers.includes(t.id)) cls += ' greedy';
+      if (g.chosen.includes(t.id)) cls += ' mine';
+      return '<div class="' + cls + '">🗼 塔' + (t.id + 1) + '<br><small>' + t.covers.length + ' 村</small></div>';
+    }).join('');
+    el.innerHTML =
+      '<div class="mm-villages">' + villages + '</div>' +
+      '<div class="mm-towers">' + towers + '</div>' +
+      '<div class="mm-legend">🟢 你盖的 ｜ 🟠 贪心会盖的 ｜ 🟡 最优（金圈）</div>';
   }
 
   function nextLevel() {

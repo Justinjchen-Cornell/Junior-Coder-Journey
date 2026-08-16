@@ -41,7 +41,12 @@ const URL = 'file:///' + path.resolve(__dirname, '..', 'index.html').split(path.
   }
   await page.waitForSelector('#screen-stats.active', { timeout: 8000 }).catch(() => {});
   check('第 1 关贪心通关', await page.isVisible('#screen-stats'));
-  check('结算含贪心对比', (await page.$eval('#stats-box', el => el.textContent)).includes('贪心'));
+  // 三重对比：你的/贪心/最优 三行 + 迷你地图金圈
+  const raceTxt = await page.$eval('#race-card', el => el.textContent);
+  check('三重对比显示（你的/贪心/最优）', raceTxt.includes('你用了') && raceTxt.includes('贪心') && raceTxt.includes('最优'));
+  check('迷你地图出现', await page.$('#mini-map') !== null);
+  check('最优塔金圈标记', (await page.$$('.mm-tower.optimal')).length >= 1);
+  check('你的塔绿标记', (await page.$$('.mm-tower.mine')).length >= 1);
 
   // 第 2 关：陷阱验证 + 最优塔高亮（第 1 关已通关 → 用结算页返回）
   await page.click('#btn-stats-home');

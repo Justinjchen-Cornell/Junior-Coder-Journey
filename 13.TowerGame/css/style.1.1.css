@@ -119,3 +119,26 @@ body {
   .level-btn { width: 220px; }
   .title { font-size: 1.5rem; }
 }
+
+/* 结算迷你地图：三重对比可视化 */
+.mini-map {
+  background: linear-gradient(180deg, #d9f2d9, #b8e6b8);
+  border: 3px solid #8a9a6a; border-radius: 16px;
+  padding: 12px; margin: 8px auto; max-width: 520px;
+}
+.mini-map .mm-villages { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-bottom: 10px; }
+.mini-map .mm-village {
+  width: 40px; height: 40px; border-radius: 50%; background: #fff;
+  border: 3px solid var(--choco); display: flex; align-items: center; justify-content: center;
+  font-size: 1.1rem; opacity: .45;
+}
+.mini-map .mm-village.covered { opacity: 1; background: #d9f2d9; border-color: var(--green); }
+.mini-map .mm-towers { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+.mm-tower {
+  min-width: 72px; padding: 8px 10px; border-radius: 12px; background: #fff;
+  border: 3px solid #c8c2b4; font-weight: 800; font-size: .85rem; text-align: center;
+}
+.mm-tower.mine { border-color: var(--green); background: #e8f5e9; }
+.mm-tower.greedy { border-color: #ff8a50; border-style: dashed; background: #fff3e6; }
+.mm-tower.optimal { border-color: #ffd54f; box-shadow: 0 0 12px rgba(255,213,79,.9); background: #fffbe6; }
+.mm-legend { font-size: .8rem; font-weight: 700; color: #5a6a4f; margin-top: 8px; text-align: center; }
