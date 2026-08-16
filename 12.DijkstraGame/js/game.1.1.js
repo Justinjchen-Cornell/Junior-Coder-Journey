@@ -71,6 +71,19 @@ function createAntGame(level) {
     return m ? m.id : null;
   }
 
+  function getCandidates() {
+    // 候选路口 = 已发现但未处理的（孩子自己比较谁最近！）
+    const cands = [];
+    for (let i = 0; i < n; i++) {
+      if (processed.has(i)) continue;
+      const c = costs.get(i);
+      if (c === undefined) continue;
+      cands.push({ id: i, cost: c });
+    }
+    cands.sort((a, b) => a.cost - b.cost || a.id - b.id);
+    return cands;
+  }
+
   function moveTo(id) {
     if (done) return false;
     const light = getLight();
@@ -184,7 +197,7 @@ function createAntGame(level) {
     get isDone() { return done; },
     get mistakes() { return mistakes; },
     get rashPath() { return rashPathOf().path; },
-    getLight, moveTo, getPanel: () => {
+    getLight, getCandidates, moveTo, getPanel: () => {
       const panel = [];
       for (let i = 0; i < n; i++) {
         panel.push({ cost: costs.has(i) ? costs.get(i) : Infinity, processed: processed.has(i) });

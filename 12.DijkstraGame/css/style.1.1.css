@@ -98,3 +98,5 @@ body {
   .level-btn { width: 220px; }
   .title { font-size: 1.5rem; }
 }
+
+.node.light-min circle { fill: #fff3b8; stroke: #ff7043; stroke-width: 5; }

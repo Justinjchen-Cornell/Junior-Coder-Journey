@@ -190,6 +190,7 @@
     const g = state.game;
     const panel = g.getPanel();
     const light = g.getLight();
+    const cands = g.getCandidates();   // 候选路口（孩子自己比较！）
     const prev = state.prevCosts || {};
     document.querySelectorAll('.node').forEach(nd => {
       const id = Number(nd.dataset.node);
@@ -200,8 +201,16 @@
       sign.textContent = costText;
       sign.setAttribute('class', 'sign' + flashed);
       nd.classList.toggle('done', p.processed);
-      nd.classList.toggle('light', id === light && !p.processed);
+      // 候选路口全部发光（最近的最亮），孩子比较步数自己选
+      const isCand = cands.some(c => c.id === id);
+      nd.classList.toggle('light', isCand && !p.processed);
+      nd.classList.toggle('light-min', id === light && !p.processed);
+      nd.classList.toggle('pickable', isCand && !p.processed);
     });
+    const hint = document.getElementById('hint');
+    if (cands.length && !g.isDone) {
+      hint.textContent = '🔍 看看这些路口的步数牌，选「最近」的那个（数字最小）！';
+    }
     state.prevCosts = {};
     panel.forEach((p, id) => { state.prevCosts[id] = p.cost; });
     document.getElementById('steps').textContent =
@@ -212,20 +221,28 @@
   function onNodeClick(id) {
     const g = state.game;
     if (g.isDone) return;
-    const light = g.getLight();
-    if (id !== light) {
+    const cands = g.getCandidates();
+    if (!cands.some(c => c.id === id)) {
       playSound('wrong');
-      setFeedback('看亮点！金色呼吸光的路口才是最近的！', 'no');
+      setFeedback('这个路口还没走到过哦——先处理已经标了步数的！', 'no');
       return;
     }
     const ok = g.moveTo(id);
-    if (!ok) return;
+    if (!ok) {
+      // 选错：给出对比提示（最近的是谁）
+      playSound('wrong');
+      const top = cands[0];
+      const mine = cands.find(c => c.id === id);
+      setFeedback('咦？' + faceOf(top.id) + '（' + top.cost + ' 步）更近！' +
+        (mine ? '你选的 ' + faceOf(id) + ' 是 ' + mine.cost + ' 步' : ''), 'no');
+      return;
+    }
     playSound('correct');
     if (g.isDone) {
       setFeedback('🐜 到西瓜啦！', 'ok');
       finishWin();
     } else {
-      setFeedback('✅ ' + faceOf(id) + ' 定案！看看数字牌刷新～', 'ok');
+      setFeedback('✅ ' + faceOf(id) + ' 定案！数字牌刷新，继续找最近的～', 'ok');
       updateUI();
     }
   }

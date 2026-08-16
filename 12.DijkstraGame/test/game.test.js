@@ -1,7 +1,7 @@
 // 《蚂蚁找食物》核心逻辑测试（Dijkstra 重做版）
 const test = require('node:test');
 const assert = require('node:assert');
-const { createAntGame } = require('../js/game.1.0.js');
+const { createAntGame } = require('../js/game.1.1.js');
 
 test('三关结构：4/6/8 路口，连通，起点≠终点', () => {
   const sizes = { 1: 4, 2: 6, 3: 8 };
@@ -171,3 +171,19 @@ function bruteMin(g) {
   dfs(g.start, new Set([g.start]), 0);
   return best;
 }
+test('候选路口：已发现未处理，按步数升序', () => {
+  const g = createAntGame(1);
+  const cands = g.getCandidates();
+  assert.ok(cands.length >= 1);
+  assert.ok(cands[0].cost === 0 && cands[0].id === g.start);   // 起点 0 步最先
+  for (let i = 1; i < cands.length; i++) {
+    assert.ok(cands[i].cost >= cands[i - 1].cost);
+  }
+});
+
+test('候选路口：处理后就消失', () => {
+  const g = createAntGame(1);
+  g.moveTo(g.getLight());
+  const cands = g.getCandidates();
+  assert.ok(!cands.some(c => c.id === g.start));
+});

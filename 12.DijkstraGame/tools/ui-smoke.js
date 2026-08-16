@@ -22,9 +22,14 @@ const URL = 'file:///' + path.resolve(__dirname, '..', 'index.html').split(path.
   while (guard++ < 30) {
     const onStats = await page.isVisible('#screen-stats');
     if (onStats) break;
-    const light = await page.$('.node.light');
-    if (!light) break;
-    await light.click();
+    const best = await page.evaluate(() => {
+      const cands = window.__game.getCandidates();
+      return cands.length ? cands[0].id : null;
+    });
+    if (best === null) break;
+    await page.evaluate((id) => {
+      document.querySelector('[data-node="' + id + '"]').dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    }, best);
   }
   check('第 1 关点亮点通关', await page.isVisible('#screen-stats'));
   check('竞速对比卡出现', (await page.$eval('#race-card', el => el.textContent)).includes('莽撞蚂蚁'));
@@ -83,9 +88,14 @@ const URL = 'file:///' + path.resolve(__dirname, '..', 'index.html').split(path.
   while (guard++ < 40) {
     const onStats = await page.isVisible('#screen-stats');
     if (onStats) break;
-    const light = await page.$('.node.light');
-    if (!light) break;
-    await light.click();
+    const best = await page.evaluate(() => {
+      const cands = window.__game.getCandidates();
+      return cands.length ? cands[0].id : null;
+    });
+    if (best === null) break;
+    await page.evaluate((id) => {
+      document.querySelector('[data-node="' + id + '"]').dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    }, best);
   }
   check('第 3 关通关', await page.isVisible('#screen-stats'));
   check('三关全通庆祝', (await page.$eval('#stats-title', el => el.textContent)).includes('三关全通'));
