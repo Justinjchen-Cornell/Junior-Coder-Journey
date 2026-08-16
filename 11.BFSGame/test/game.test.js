@@ -56,6 +56,7 @@ test('目标在第 k 圈被揭示：foundLevel = k（最短步数）', () => {
   }
   assert.ok(found);
   assert.strictEqual(g.foundLevel, g.bfsLevelOf(target));
+  while (!g.isDone) g.expand();   // 找到后继续扩散到全部完成
   assert.ok(g.isDone);
 });
 
