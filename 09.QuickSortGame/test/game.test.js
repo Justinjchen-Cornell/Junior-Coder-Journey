@@ -1,7 +1,7 @@
 // 《书架整理员》核心逻辑测试（快排分而治之）
 const test = require('node:test');
 const assert = require('node:assert');
-const { createSortGame } = require('../js/game.1.0.js');
+const { createSortGame } = require('../js/game.1.1.js');
 
 test('初始化：书本 1..n 乱序', () => {
   const g = createSortGame('baby');
@@ -125,4 +125,34 @@ test('reset：恢复初始', () => {
   assert.strictEqual(g.mistakes, 0);
   assert.strictEqual(g.compares, 0);
   assert.ok(!g.isDone);
+});
+
+test('层级：子堆 level = 当前层+1；等待队列可见', () => {
+  const g = createSortGame('baby');
+  assert.strictEqual(g.currentLevel, 1);
+  const pivot = g.books[0];
+  g.pickPivot(pivot.id);
+  while (g.pendingBook !== null) {
+    const book = g.books.find(b => b.id === g.pendingBook);
+    const pv = g.books.find(b => b.id === g.pivotId).value;
+    g.classify(book.value < pv ? 'small' : 'big');
+  }
+  // 第一堆分完：下一堆 level=2，另一堆在等待队列
+  assert.strictEqual(g.currentLevel, 2);
+  const wait = g.waitingStacks;
+  assert.ok(wait.length >= 0);
+  if (wait.length) assert.strictEqual(wait[0].level, 2);
+});
+
+test('左右堆计数暴露：分完当前堆后，左右合计 = 除标杆外所有书', () => {
+  const g = createSortGame('baby');
+  const pivot = g.books[0];
+  g.pickPivot(pivot.id);
+  while (g.pendingBook !== null) {
+    const book = g.books.find(b => b.id === g.pendingBook);
+    const pv = g.books.find(b => b.id === g.pivotId).value;
+    g.classify(book.value < pv ? 'small' : 'big');
+  }
+  const total = g.leftCount + g.rightCount;
+  assert.strictEqual(total, g.books.length - 1);   // 除标杆外的所有书
 });

@@ -20,7 +20,7 @@ function createSortGame(mode) {
   const n = cfg.min + Math.floor(Math.random() * (cfg.max - cfg.min + 1));
   let books = shuffle([...Array(n)].map((_, i) => ({ id: i, value: i + 1 })));
 
-  let stacks = [books.map(b => b.id)];  // 待分堆队列（栈式，左堆优先）
+  let stacks = [{ ids: books.map(b => b.id), level: 1 }];  // 待分堆队列（栈式，左堆优先，带层级）
   let pivotId = null;
   let left = [];            // 当前堆的小书
   let right = [];           // 当前堆的大书
@@ -32,7 +32,16 @@ function createSortGame(mode) {
   let placed = new Map();   // id -> 槽位（value-1）
 
   function currentStackTop() {
-    return stacks.length ? stacks[stacks.length - 1] : [];
+    return stacks.length ? stacks[stacks.length - 1].ids : [];
+  }
+
+  function currentLevel() {
+    return stacks.length ? stacks[stacks.length - 1].level : 0;
+  }
+
+  function waitingStacks() {
+    // 等待中的堆（不含当前堆），供 UI 显示"排队等着分的堆"
+    return stacks.slice(0, stacks.length - 1).map(s => ({ count: s.ids.length, level: s.level }));
   }
 
   function pickPivot(id) {
@@ -66,17 +75,18 @@ function createSortGame(mode) {
 
   function finishStack() {
     // 当前堆分完：弹出已处理堆，标杆落位，子堆入队（右先进，左先出）
+    const lv = currentLevel();     // 先读层级（pop 后 stacks 可能为空）
     stacks.pop();
     placed.set(pivotId, books.find(b => b.id === pivotId).value - 1);
     pivotId = null;
-    if (right.length > 1) stacks.push(right);
+    if (right.length > 1) stacks.push({ ids: right, level: lv + 1 });
     else if (right.length === 1) placed.set(right[0], books.find(b => b.id === right[0]).value - 1);
-    if (left.length > 1) stacks.push(left);
+    if (left.length > 1) stacks.push({ ids: left, level: lv + 1 });
     else if (left.length === 1) placed.set(left[0], books.find(b => b.id === left[0]).value - 1);
     // 弹出下一个待分堆（跳过已完成的）
-    while (stacks.length && (stacks[stacks.length - 1].length <= 1)) {
+    while (stacks.length && (stacks[stacks.length - 1].ids.length <= 1)) {
       const s = stacks.pop();
-      if (s.length === 1) placed.set(s[0], books.find(b => b.id === s[0]).value - 1);
+      if (s.ids.length === 1) placed.set(s.ids[0], books.find(b => b.id === s.ids[0]).value - 1);
     }
     if (stacks.length === 0 && pivotId === null) done = true;
   }
@@ -101,7 +111,7 @@ function createSortGame(mode) {
 
   function reset() {
     books = shuffle([...Array(n)].map((_, i) => ({ id: i, value: i + 1 })));
-    stacks = [books.map(b => b.id)];
+    stacks = [{ ids: books.map(b => b.id), level: 1 }];
     pivotId = null; left = []; right = []; pending = [];
     rounds = 0; compares = 0; mistakes = 0; done = false;
     placed = new Map();
@@ -116,6 +126,10 @@ function createSortGame(mode) {
     get compares() { return compares; },
     get mistakes() { return mistakes; },
     get currentStackTop() { return currentStackTop(); },
+    get currentLevel() { return currentLevel(); },
+    get waitingStacks() { return waitingStacks(); },
+    get leftCount() { return left.length; },
+    get rightCount() { return right.length; },
     pickPivot, classify, getSlot, starsFor, getStats, reset,
   };
 }

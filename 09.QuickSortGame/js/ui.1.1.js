@@ -91,7 +91,11 @@
     const ids = g.currentStackTop;
     const zone = document.getElementById('pending-zone');
     zone.className = 'pending-zone';
-    zone.innerHTML = '<div class="book-pile">' +
+    // 层级徽章：让孩子看到"分而治之"进行到第几层
+    const badge = g.currentLevel > 1
+      ? '<div class="level-badge">🔍 第 ' + g.currentLevel + ' 层分堆 · 正在分这一堆</div>'
+      : '<div class="level-badge">📚 第一层：先分这一大堆</div>';
+    zone.innerHTML = badge + '<div class="book-pile">' +
       ids.map(id => bookHtml(g.books.find(b => b.id === id), 'pickable')).join('') +
       '</div>';
     zone.querySelectorAll('.book').forEach(bk => {
@@ -99,6 +103,19 @@
     });
     document.getElementById('classify-zone').innerHTML = '';
     document.getElementById('pivot-zone').innerHTML = '';
+    renderWaiting();
+  }
+
+  // 等待队列：还没分的堆（递归"右边等着"可视化）
+  function renderWaiting() {
+    const g = state.game;
+    const waiting = g.waitingStacks;
+    const el = document.getElementById('waiting-zone');
+    if (!el) return;
+    if (!waiting.length) { el.innerHTML = ''; return; }
+    el.innerHTML = '<div class="waiting-label">⏳ 还有 ' + waiting.length + ' 堆等着分（先分完这一堆）</div>' +
+      waiting.map(w =>
+        '<span class="waiting-chip">' + w.count + ' 本 · 第 ' + w.level + ' 层</span>').join('');
   }
 
   function onPick(id) {
@@ -168,6 +185,7 @@
 
   function finishWin() {
     placePivot();
+    mergeCascade();   // 合并动画：1→n 依次点亮（合并结果）
     const stats = state.game.getStats();
     playSound('win');
     setHint('🎉 书架排好啦！' + '⭐'.repeat(stats.stars));
@@ -175,6 +193,22 @@
     setTimeout(() => document.getElementById('animal-face').classList.remove('celebrate'), 700);
     showRecord(stats.stars, stats.mistakes);
     showStatsPage(stats);
+  }
+
+  function mergeCascade() {
+    // 第 3 步：合并——书架上的书按 1→n 依次发光（"排好了！"）
+    const shelf = document.querySelectorAll('.shelf .slot');
+    const g = state.game;
+    let i = 0;
+    const timer = setInterval(() => {
+      if (i >= shelf.length) { clearInterval(timer); return; }
+      const bk = shelf[i].querySelector('.sbook');
+      if (bk) {
+        bk.classList.add('merge-glow');
+        playSound('correct');
+      }
+      i++;
+    }, 180);
   }
 
   function showStatsPage(stats) {

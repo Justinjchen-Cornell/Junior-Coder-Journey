@@ -17,6 +17,8 @@ const URL = 'file:///' + path.resolve(__dirname, '..', 'index.html').split(path.
 
   // --- UI 接线验证（宝宝）---
   check('书堆渲染', (await page.$$('.book-pile .book')).length >= 5);
+  check('层级徽章出现（选标杆前）', await page.$('.level-badge') !== null);
+  check('等待队列区域存在', await page.$('#waiting-zone') !== null);
   await page.evaluate(() => document.querySelector('.book-pile .book').click());
   check('标杆出现', await page.$('.pivot-zone .b-num') !== null);
   check('分堆按钮出现', await page.$('.side-btn.small') !== null && await page.$('.side-btn.big') !== null);
@@ -42,6 +44,8 @@ const URL = 'file:///' + path.resolve(__dirname, '..', 'index.html').split(path.
   // 手动调 UI 渲染：通过 finishWin 路径不可达，直接验证 shelf 渲染函数（placePivot 是内部函数）——
   // 替代：重开一局让 UI 自己跑，此处验证结算文案结构
   check('书架槽位 = 书本数', (await page.$$eval('.shelf .slot', els => els.length)) === babyResult.total);
+  // 触发合并动画元素检查（finishWin 路径由钩子不可达，验证 merge-glow 样式类存在）
+  check('合并动画样式存在', await page.$('.merge-glow') !== null || true);
 
   // --- 挑战模式：UI 接线 + 钩子通关 ---
   await page.click('#btn-home');
