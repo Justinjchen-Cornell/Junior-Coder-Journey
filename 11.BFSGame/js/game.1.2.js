@@ -84,6 +84,8 @@ function createBFSGame(mode) {
   let foundLevel = null;
   let mistakes = 0;
   let guessed = false;
+  let predicted = null;       // 预言的第几圈
+  let predictionCorrect = false;
   const parent = new Map();   // 首次发现时的父节点（BFS 最短路径树）
 
   function expand() {
@@ -129,6 +131,28 @@ function createBFSGame(mode) {
     return false;
   }
 
+  // 路径预言：观察全图，猜"目标在第几圈找到"（3 选 1）
+  function predictionOptions() {
+    const correct = bfsLevel.get(target);
+    const traps = [correct + 1, correct - 1, correct + 2, correct - 2]
+      .filter(v => v >= 1 && !optionsUsed().includes(v));
+    function optionsUsed() { return [correct]; }
+    const opts = [correct];
+    while (opts.length < 3 && traps.length) {
+      const t = traps.splice(Math.floor(Math.random() * traps.length), 1)[0];
+      if (!opts.includes(t)) opts.push(t);
+    }
+    shuffle(opts);
+    return { correct, options: opts };
+  }
+
+  function submitPrediction(level) {
+    if (predicted !== null || isDone()) return false;
+    predicted = level;
+    predictionCorrect = (level === bfsLevel.get(target));
+    return predictionCorrect;
+  }
+
   function isDone() {
     return guessed || (foundLevel !== null && visited.size === n) || (foundLevel !== null && queue.length === 0);
   }
@@ -144,8 +168,9 @@ function createBFSGame(mode) {
   function getStats() {
     return {
       steps: foundLevel === null ? currentLevel : foundLevel,
-      mistakes, stars: starsFor(mistakes),
+      mistakes, stars: predictionCorrect ? 3 : (starsFor(mistakes) >= 3 ? 2 : starsFor(mistakes)),
       target, nodeCount: n,
+      predictionCorrect, predicted,
     };
   }
 
@@ -156,6 +181,8 @@ function createBFSGame(mode) {
     foundLevel = null;
     mistakes = 0;
     guessed = false;
+    predicted = null;
+    predictionCorrect = false;
     parent.clear();
   }
 
@@ -164,7 +191,11 @@ function createBFSGame(mode) {
     get isDone() { return isDone(); },
     get foundLevel() { return foundLevel; },
     get mistakes() { return mistakes; },
-    expand, guess, bfsLevelOf, getShortestPath, starsFor, getStats, reset,
+    expand, guess, bfsLevelOf, getShortestPath,
+    predictionOptions, submitPrediction,
+    get predicted() { return predicted; },
+    get predictionCorrect() { return predictionCorrect; },
+    starsFor, getStats, reset,
   };
 }
 

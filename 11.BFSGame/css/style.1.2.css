@@ -132,3 +132,16 @@ body {
   animation: path-flow 1s linear infinite;
 }
 @keyframes path-flow { to { stroke-dashoffset: -20; } }
+
+/* v1.2 路径预言挑战 */
+.predict-hint { font-size: 1.02rem; font-weight: 800; color: #5c9cff; margin-bottom: 8px; }
+.predict-opt {
+  font-size: 1.3rem; font-weight: 900; background: #fff; border: 4px solid #5c9cff;
+  border-radius: 18px; padding: 12px 18px; cursor: pointer;
+  box-shadow: 0 3px 8px rgba(0,0,0,.15);
+}
+.predict-opt:active { transform: scale(.93); }
+.predict-result {
+  font-size: 1.1rem; font-weight: 900; color: #5c9cff; background: #eaf3ff;
+  border-radius: 14px; padding: 8px 16px; display: inline-block;
+}

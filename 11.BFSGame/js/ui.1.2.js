@@ -63,7 +63,9 @@
     showScreen('screen-game');
     renderForest();
     setMission();
-    setHint('按「扩散」按钮，看波纹一圈圈靠近 ❓！');
+    renderPrediction();
+    setHint('🔍 观察森林：从 🐒 到 ❓ 最少要走几步？预言一下！');
+    document.getElementById('btn-expand').style.display = 'none';
     setFeedback('', '');
     document.getElementById('record').textContent = '';
     updateStatus();
@@ -126,6 +128,29 @@
     revealNode(g.start, true);
   }
 
+  function renderPrediction() {
+    const g = state.game;
+    const po = g.predictionOptions();
+    document.getElementById('guess-zone').innerHTML =
+      '<div class="predict-hint">🧐 你觉得第几圈能找到 ❓？（数一数最短的路）</div>' +
+      '<div class="chain-items">' +
+      po.options.map(o => '<div class="predict-opt" data-pred="' + o + '">第 ' + o + ' 圈！</div>').join('') +
+      '</div>';
+    document.querySelectorAll('.predict-opt').forEach(opt => {
+      opt.addEventListener('click', () => onPredict(Number(opt.dataset.pred)));
+    });
+  }
+
+  function onPredict(level) {
+    const g = state.game;
+    g.submitPrediction(level);
+    playSound('pop');
+    document.getElementById('guess-zone').innerHTML =
+      '<div class="predict-result">📣 预言：第 ' + level + ' 圈！扩散验证吧！</div>';
+    document.getElementById('btn-expand').style.display = 'inline-block';
+    setHint('按「扩散」，看你的预言准不准！');
+  }
+
   function setMission() {
     const g = state.game;
     document.getElementById('mission').textContent =
@@ -174,9 +199,12 @@
     }
     playSound('win');
     drawShortestPath();
+    const predMsg = g.predictionCorrect
+      ? '🌟 预言成真！你数对了！'
+      : '你预言第 ' + g.predicted + ' 圈……BFS 找到第 ' + g.foundLevel + ' 圈（看金线数一数？）';
     setHint('🎉 找到啦！它' + FOREST_FACES[g.target % FOREST_FACES.length] + '会做冰淇淋！' +
       '第 ' + g.foundLevel + ' 圈 = ' + g.foundLevel + ' 步（最短！）');
-    setFeedback('🐒 小猴吃到冰淇淋啦！😋', 'ok');
+    setFeedback(predMsg, g.predictionCorrect ? 'ok' : 'no');
     document.getElementById('mission').textContent =
       '✅ 找到 ❓ = ' + FOREST_FACES[g.target % FOREST_FACES.length] + '！小猴吃到冰淇淋啦！🎉';
     document.getElementById('btn-expand').style.display = 'none';
@@ -235,6 +263,8 @@
     }
     document.getElementById('stats-box').innerHTML =
       '<div class="big">第 ' + stats.steps + ' 圈找到 = ' + stats.steps + ' 步！</div>' +
+      '<div>🔮 预言：第 ' + (stats.predicted || '-') + ' 圈 → ' +
+      (stats.predictionCorrect ? '🌟 成真！你是路径侦探！' : '❌ 落空（数一数金线就知道啦）') + '</div>' +
       '<div>错误：' + stats.mistakes + ' 次</div>' +
       '<div>🐻 小秘密：一圈一圈先碰到谁，谁就是最近的——这就是 BFS！</div>' +
       '<div>如果一条路走到黑（DFS），可能会绕远路哦！</div>';
