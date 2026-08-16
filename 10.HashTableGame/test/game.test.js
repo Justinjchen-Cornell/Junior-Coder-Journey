@@ -1,7 +1,7 @@
 // 《小动物储物柜》核心逻辑测试（哈希表）
 const test = require('node:test');
 const assert = require('node:assert');
-const { createLockerGame } = require('../js/game.1.1.js');
+const { createLockerGame } = require('../js/game.2.0.js');
 
 test('初始化：宝宝模式 4-5 件物品，柜号不冲突', () => {
   const g = createLockerGame('baby');
