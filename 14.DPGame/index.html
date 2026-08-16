@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>小松鼠装松果 🐿️</title>
+  <link rel="stylesheet" href="css/style.1.0.css">
+</head>
+<body class="">
+<script>if (location.search.includes('fast=1')) document.body.className = 'fast';</script>
+  <div id="app">
+    <section id="screen-start" class="screen active">
+      <a class="btn-portal-mini" href="../index.html">🎡 回游乐场</a>
+      <h1 class="title">🐿️ 小松鼠装松果</h1>
+      <p class="subtitle">篮子只有这么大！挑松果装进去，让价值（松子数）最高！</p>
+      <div class="level-picker" id="level-picker">
+        <button class="level-btn" data-level="1">🌱 第 1 关<br><small>4 格 · 3 件</small></button>
+        <button class="level-btn" data-level="2">🌿 第 2 关<br><small>5 格 · 4 件 · 有陷阱</small></button>
+        <button class="level-btn" data-level="3">🌳 第 3 关<br><small>7 格 · 6 件 · 大挑战</small></button>
+      </div>
+      <div class="record-line" id="record-line"></div>
+    </section>
+
+    <section id="screen-game" class="screen">
+      <header class="game-header">
+        <span class="animal-face" id="animal-face">🐿️</span>
+        <div class="header-info">
+          <div class="hint" id="hint">点松果装进篮子，再点拿出来！</div>
+          <div class="status-line">
+            <span class="steps" id="steps"></span>
+            <span class="record" id="record"></span>
+          </div>
+        </div>
+      </header>
+
+      <div class="mission" id="mission">🎯 篮子 5 格，装出最高的价值！</div>
+
+      <div class="basket-zone">
+        <div class="basket-label">🧺 篮子（<span id="basket-fill">0</span>/<span id="basket-cap">0</span> 格）</div>
+        <div class="basket" id="basket"></div>
+      </div>
+
+      <div class="item-zone" id="item-zone"></div>
+
+      <div class="action-line">
+        <button class="btn-finish" id="btn-finish">🎒 装好了！</button>
+      </div>
+
+      <div class="feedback" id="feedback"></div>
+      <button class="btn-reset" id="btn-reset">🔄 重来这关</button>
+      <button class="btn-home" id="btn-home">🏠 选关卡</button>
+    </section>
+
+    <section id="screen-stats" class="screen">
+      <h2 class="stats-title" id="stats-title">装好啦！</h2>
+      <div class="reward-card" id="stats-reward" style="display:none"></div>
+      <div class="race-card" id="race-card"></div>
+      <div class="dp-grid" id="dp-grid"></div>
+      <div class="stats-box" id="stats-box"></div>
+      <button class="btn-next" id="btn-next">下一关 ▶</button>
+      <button class="btn-reset" id="btn-stats-reset">🔄 重装这关</button>
+      <button class="btn-home" id="btn-stats-home">🏠 选关卡</button>
+      <a class="btn-portal" href="../index.html">🎡 回游乐场</a>
+    </section>
+  </div>
+  <script src="js/game.1.0.js"></script>
+  <script src="js/ui.1.0.js"></script>
+</body>
+</html>

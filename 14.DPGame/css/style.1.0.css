@@ -1,0 +1,126 @@
+/* 小松鼠装松果 · 森林风格 */
+:root { --cream: #fff6e5; --pink: #ff8fb3; --gold: #ffd54f; --choco: #6b4a2b; --ink: #3a2e1f; --green: #6ec96e; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  font-family: "PingFang SC", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+  background: linear-gradient(180deg, #ffe3b3 0%, #fff6e5 55%, #b8e6b8 100%);
+  color: var(--ink); user-select: none; -webkit-tap-highlight-color: transparent;
+  overflow-x: hidden;
+}
+#app { max-width: 820px; margin: 0 auto; padding: 12px; min-height: 100vh; }
+.screen { display: none; }
+.screen.active { display: block; }
+.title { text-align: center; font-size: 2rem; margin: 18px 0 4px; text-shadow: 2px 2px 0 rgba(255,255,255,.6); }
+.subtitle { text-align: center; font-size: 1.02rem; margin-bottom: 18px; color: #8a6a3f; }
+
+.level-picker { display: flex; flex-direction: column; gap: 14px; align-items: center; margin-top: 24px; }
+.level-btn {
+  width: 260px; font-size: 1.2rem; font-weight: 900; padding: 18px 24px;
+  border-radius: 20px; border: 4px solid var(--choco); cursor: pointer;
+  background: #fff; box-shadow: 0 4px 10px rgba(0,0,0,.18);
+  transition: transform .12s;
+}
+.level-btn:active { transform: scale(.96); }
+.level-btn small { display: block; font-size: .85rem; color: #8a7a5f; font-weight: 700; margin-top: 4px; }
+.level-btn:nth-child(1) { border-color: #6ec96e; }
+.level-btn:nth-child(2) { border-color: #ff8a50; }
+.level-btn:nth-child(3) { border-color: #e5484d; }
+.record-line { text-align: center; margin-top: 18px; font-size: .95rem; color: #8a7a5f; font-weight: 700; }
+
+.game-header { display: flex; align-items: center; gap: 12px; margin: 8px 0; }
+.animal-face { font-size: 2.4rem; background: #fff; border-radius: 50%; width: 62px; height: 62px;
+  display: flex; align-items: center; justify-content: center; border: 4px solid var(--choco); }
+.header-info { flex: 1; }
+.hint { font-size: 1.05rem; font-weight: 700; }
+.status-line { display: flex; gap: 10px; align-items: center; margin-top: 4px; font-size: .9rem; flex-wrap: wrap; }
+
+.mission {
+  text-align: center; background: #fff3cd; border: 3px solid #ffd54f;
+  border-radius: 16px; padding: 8px 14px; margin: 6px auto; font-weight: 800;
+  font-size: 1.02rem; color: #8a6a1f; max-width: 560px;
+}
+
+/* 篮子 */
+.basket-zone {
+  background: rgba(255,255,255,.8); border: 4px solid #b08968; border-radius: 18px;
+  padding: 12px; margin: 8px 0;
+}
+.basket-label { font-size: .95rem; font-weight: 800; color: #8a6a4f; margin-bottom: 8px; }
+.basket { display: flex; gap: 6px; flex-wrap: wrap; min-height: 60px; align-items: center; }
+.basket .b-slot {
+  width: 46px; height: 46px; border-radius: 10px; border: 2px dashed #c8b69a;
+  background: #faf5ea; display: flex; align-items: center; justify-content: center; font-size: 1.3rem;
+}
+.basket .b-slot.filled { border-style: solid; border-color: var(--green); background: #e8f5e9; animation: slot-pop .3s ease; }
+@keyframes slot-pop { 0% { transform: scale(.4); } 70% { transform: scale(1.2); } 100% { transform: scale(1); } }
+.basket.overload { animation: basket-shake .4s ease; border-color: #d32f2f; }
+@keyframes basket-shake {
+  0%,100% { transform: translateX(0); }
+  25% { transform: translateX(-8px); }
+  75% { transform: translateX(8px); }
+}
+
+/* 物品栏 */
+.item-zone { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin: 12px 0; }
+.item-card {
+  width: 96px; padding: 10px 8px; border-radius: 16px; background: #fff;
+  border: 4px solid var(--choco); cursor: pointer; text-align: center;
+  box-shadow: 0 4px 8px rgba(0,0,0,.15); transition: transform .12s;
+  font-family: inherit; font-weight: 800; font-size: .9rem;
+}
+.item-card:active { transform: scale(.94); }
+.item-card .item-face { font-size: 2rem; display: block; }
+.item-card .item-meta { font-size: .78rem; color: #5a6a4f; margin-top: 4px; }
+.item-card.in-basket { border-color: var(--green); background: #e8f5e9; }
+.item-card.disabled { opacity: .5; }
+
+.feedback { text-align: center; font-size: 1.3rem; font-weight: 800; min-height: 2rem; margin: 6px 0; }
+.feedback.ok { color: #2e7d32; }
+.feedback.no { color: #d32f2f; }
+
+.action-line { text-align: center; margin: 6px 0; }
+.btn-finish {
+  font-size: 1.2rem; font-weight: 900; padding: 14px 34px; border-radius: 20px;
+  border: 4px solid #ff8a50; background: #fff3e6; cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0,0,0,.18);
+}
+
+.btn-reset, .btn-home, .btn-next {
+  display: block; margin: 8px auto; padding: 12px 24px; font-size: 1.02rem;
+  border-radius: 18px; border: 3px solid var(--choco); cursor: pointer;
+  background: #fff; box-shadow: 0 4px 8px rgba(0,0,0,.18);
+}
+.btn-home { background: #ffe9d6; }
+.btn-next { background: #fff3cd; border-color: #ffd54f; font-weight: 900; }
+
+.stats-title { text-align: center; margin: 20px 0 10px; }
+.stats-box { background: rgba(255,255,255,.85); border-radius: 18px; padding: 16px; margin: 12px 0; font-size: 1.02rem; line-height: 1.9; }
+.stats-box .big { font-size: 1.35rem; font-weight: 800; }
+.race-card {
+  background: #fff; border: 4px solid #5c9cff; border-radius: 18px;
+  padding: 14px; margin: 10px auto; max-width: 480px; font-size: 1.05rem; line-height: 1.9;
+}
+
+/* DP 网格 */
+.dp-grid {
+  background: #fff; border: 3px solid #5c9cff; border-radius: 16px;
+  padding: 10px; margin: 10px auto; max-width: 520px; overflow-x: auto;
+}
+.dp-grid .dp-title { font-size: .9rem; font-weight: 900; color: #5c9cff; margin-bottom: 6px; }
+.dp-grid table { border-collapse: collapse; font-size: .78rem; }
+.dp-grid td, .dp-grid th {
+  border: 1px solid #d5e4ff; padding: 3px 7px; text-align: center; min-width: 34px;
+}
+.dp-grid th { background: #eaf3ff; color: #5c9cff; }
+.dp-grid td.opt { background: #fff3cd; font-weight: 900; }
+
+@keyframes celebrate-pop { 0% { transform: scale(0) rotate(-20deg); } 70% { transform: scale(1.4) rotate(10deg); } 100% { transform: scale(1) rotate(0); } }
+.celebrate { animation: celebrate-pop .6s ease; display: inline-block; }
+
+.fast * { animation: none !important; transition: none !important; }
+
+@media (max-width: 480px) {
+  .level-btn { width: 220px; }
+  .title { font-size: 1.5rem; }
+}
