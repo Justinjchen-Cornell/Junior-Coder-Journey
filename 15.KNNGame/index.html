@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>猜猜它是谁 🔮</title>
+  <link rel="stylesheet" href="css/style.1.0.css">
+</head>
+<body class="">
+<script>if (location.search.includes('fast=1')) document.body.className = 'fast';</script>
+  <div id="app">
+    <section id="screen-start" class="screen active">
+      <a class="btn-portal-mini" href="../index.html">🎡 回游乐场</a>
+      <h1 class="title">🔮 猜猜它是谁</h1>
+      <p class="subtitle">森林里来了新动物 ❓！看它离谁最近，选几个邻居，投票猜族！</p>
+      <div class="level-picker" id="level-picker">
+        <button class="level-btn" data-level="1">🌱 第 1 关<br><small>2 族 · 学看邻居</small></button>
+        <button class="level-btn" data-level="2">🌿 第 2 关<br><small>有噪声 · 别看单个</small></button>
+        <button class="level-btn" data-level="3">🌳 第 3 关<br><small>3 族 · K 自己选</small></button>
+      </div>
+      <div class="record-line" id="record-line"></div>
+    </section>
+
+    <section id="screen-game" class="screen">
+      <header class="game-header">
+        <span class="animal-face" id="animal-face">🔮</span>
+        <div class="header-info">
+          <div class="hint" id="hint">点已知动物当邻居（最多 3 个）</div>
+          <div class="status-line">
+            <span class="steps" id="steps"></span>
+            <span class="record" id="record"></span>
+          </div>
+        </div>
+      </header>
+
+      <div class="mission" id="mission">🎯 ❓ 新动物最像哪一族？选邻居 → 投票！</div>
+
+      <div class="plot-zone">
+        <div class="plot" id="plot"></div>
+        <div class="axis-labels">
+          <span class="ax-x">← 小 → 大（大小）</span>
+          <span class="ax-y">光溜溜 → 毛茸茸（毛茸茸度）↑</span>
+        </div>
+      </div>
+
+      <div class="k-zone" id="k-zone"></div>
+
+      <div class="vote-zone" id="vote-zone"></div>
+
+      <div class="feedback" id="feedback"></div>
+      <button class="btn-reset" id="btn-reset">🔄 重来这关</button>
+      <button class="btn-home" id="btn-home">🏠 选关卡</button>
+    </section>
+
+    <section id="screen-stats" class="screen">
+      <h2 class="stats-title" id="stats-title">猜完啦！</h2>
+      <div class="reward-card" id="stats-reward" style="display:none"></div>
+      <div class="race-card" id="race-card"></div>
+      <div class="stats-box" id="stats-box"></div>
+      <button class="btn-next" id="btn-next">下一关 ▶</button>
+      <button class="btn-reset" id="btn-stats-reset">🔄 重猜这关</button>
+      <button class="btn-home" id="btn-stats-home">🏠 选关卡</button>
+      <a class="btn-portal" href="../index.html">🎡 回游乐场</a>
+    </section>
+  </div>
+  <script src="js/game.1.0.js"></script>
+  <script src="js/ui.1.0.js"></script>
+</body>
+</html>
