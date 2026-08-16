@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>猜猜小动物在哪里 🐿️</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div id="app">
+    <!-- 开场：选动物 -->
+    <section id="screen-animal" class="screen active">
+      <h1 class="title">🐿️ 猜猜小动物在哪里</h1>
+      <p class="subtitle">今天谁躲起来了呀？</p>
+      <div class="animal-picker" id="animal-picker"></div>
+      <div class="mode-picker" id="mode-picker">
+        <button class="mode-btn baby" data-mode="baby">🍼 宝宝模式<br><small>1~10 个树洞</small></button>
+        <button class="mode-btn challenge" data-mode="challenge">🚀 挑战模式<br><small>1~100 个格子</small></button>
+      </div>
+    </section>
+
+    <!-- 游戏主界面 -->
+    <section id="screen-game" class="screen">
+      <header class="game-header">
+        <span class="animal-face" id="animal-face">🐰</span>
+        <div class="header-info">
+          <div class="hint" id="hint">小宥宥，猜猜我在哪个树洞？</div>
+          <div class="status-line">
+            <span class="steps" id="steps"></span>
+            <span class="stars" id="stars"></span>
+            <span class="record" id="record"></span>
+          </div>
+        </div>
+      </header>
+      <div class="board" id="board"></div>
+      <div class="feedback" id="feedback"></div>
+      <button class="btn-reset" id="btn-reset">🔄 再玩一次</button>
+      <button class="btn-home" id="btn-home">🏠 换个小动物</button>
+    </section>
+  </div>
+  <script src="js/game.js"></script>
+  <script src="js/ui.js"></script>
+</body>
+</html>

@@ -1,0 +1,99 @@
+/* 猜猜小动物在哪里 · 卡通风格 */
+:root {
+  --sky: #7ec8ff;
+  --grass: #6ec96e;
+  --wood: #8b5a2b;
+  --card: #fff8e7;
+  --ink: #3a2e1f;
+  --hot: #ff7043;
+  --gold: #ffd54f;
+  --dim: #c8c2b4;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  font-family: "PingFang SC", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+  background: linear-gradient(180deg, var(--sky) 0%, #aee3ff 55%, var(--grass) 100%);
+  color: var(--ink);
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  overflow-x: hidden;
+}
+
+#app { max-width: 720px; margin: 0 auto; padding: 12px; min-height: 100vh; }
+
+.screen { display: none; }
+.screen.active { display: block; }
+
+/* 开场 */
+.title { text-align: center; font-size: 2rem; margin: 18px 0 4px; text-shadow: 2px 2px 0 rgba(255,255,255,.5); }
+.subtitle { text-align: center; font-size: 1.1rem; margin-bottom: 16px; }
+.animal-picker { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin: 18px 0; }
+.animal-picker button {
+  font-size: 2.6rem; width: 86px; height: 86px; border-radius: 50%;
+  border: 4px solid var(--wood); background: var(--card);
+  cursor: pointer; box-shadow: 0 4px 8px rgba(0,0,0,.2);
+  transition: transform .15s;
+}
+.animal-picker button:active { transform: scale(.9); }
+.mode-picker { display: flex; gap: 14px; justify-content: center; margin-top: 22px; }
+.mode-btn {
+  font-size: 1.15rem; padding: 16px 22px; border-radius: 20px;
+  border: 4px solid var(--wood); cursor: pointer; background: var(--card);
+  box-shadow: 0 4px 8px rgba(0,0,0,.2);
+}
+.mode-btn small { display: block; font-size: .8rem; color: #8a7a5f; margin-top: 4px; }
+.mode-btn.baby { border-color: var(--hot); }
+.mode-btn.challenge { border-color: #5c9cff; }
+
+/* 游戏头部 */
+.game-header { display: flex; align-items: center; gap: 12px; margin: 12px 0; }
+.animal-face { font-size: 3rem; background: var(--card); border-radius: 50%; width: 72px; height: 72px;
+  display: flex; align-items: center; justify-content: center; border: 4px solid var(--wood); }
+.header-info { flex: 1; }
+.hint { font-size: 1.15rem; font-weight: 700; }
+.status-line { display: flex; gap: 10px; align-items: center; margin-top: 4px; font-size: .95rem; }
+.stars { color: var(--gold); font-size: 1.15rem; }
+
+/* 数字板（树洞/格子共用） */
+.board { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin: 14px 0; }
+.cell {
+  min-width: 64px; min-height: 64px; border-radius: 14px;
+  font-size: 1.35rem; font-weight: 700;
+  border: 3px solid var(--wood); background: var(--card);
+  cursor: pointer; box-shadow: 0 3px 6px rgba(0,0,0,.18);
+  transition: transform .12s, background .2s, opacity .3s;
+}
+.cell:active { transform: scale(.92); }
+.cell.excluded { opacity: .22; pointer-events: none; }
+.cell.in-range { background: #fff3b8; border-color: var(--gold); box-shadow: 0 0 12px rgba(255,213,79,.7); }
+.cell.hit { background: #b8f0b8; border-color: var(--grass); transform: scale(1.15); }
+.board.challenge .cell { min-width: 46px; min-height: 46px; font-size: 1rem; border-radius: 8px; }
+
+/* 反馈大字 */
+.feedback { text-align: center; font-size: 1.5rem; font-weight: 800; min-height: 2.4rem; margin: 8px 0; }
+.feedback.low::before { content: "⬆️ "; }
+.feedback.high::before { content: "⬇️ "; }
+
+/* 按钮 */
+.btn-reset, .btn-home {
+  display: block; margin: 10px auto; padding: 14px 28px; font-size: 1.1rem;
+  border-radius: 18px; border: 3px solid var(--wood); cursor: pointer;
+  background: var(--card); box-shadow: 0 4px 8px rgba(0,0,0,.2);
+}
+.btn-home { background: #ffe9d6; }
+
+/* 庆祝动画 */
+@keyframes pop { 0% { transform: scale(0); } 70% { transform: scale(1.3); } 100% { transform: scale(1); } }
+.cell.hit .emoji-pop { animation: pop .5s ease; }
+.celebrate { animation: pop .6s ease; }
+
+/* 响应式：手机 */
+@media (max-width: 480px) {
+  .animal-picker button { width: 66px; height: 66px; font-size: 2rem; }
+  .board { gap: 6px; }
+  .cell { min-width: 54px; min-height: 54px; font-size: 1.1rem; }
+  .board.challenge .cell { min-width: 36px; min-height: 36px; font-size: .8rem; }
+  .title { font-size: 1.5rem; }
+}
