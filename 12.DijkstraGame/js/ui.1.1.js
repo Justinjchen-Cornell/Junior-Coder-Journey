@@ -70,34 +70,44 @@
     document.getElementById(id).classList.add('active');
   }
 
-  // ---------- SVG 地图 ----------
+  // ---------- SVG 地图（分层布局：起点左、终点右、中间按深度分列） ----------
   function renderMap() {
     const g = state.game;
-    const W = 760, H = 360;
+    const W = 780, H = 380;
     const n = g.nodeCount;
-    // 环形布局（简单均匀）：起点左下、终点右上
+    const maxDepth = Math.max(...g.depth.map(d => d.d));
+    // 分层：x 按深度，y 按该层节点数均匀散布
+    const groups = {};
+    g.depth.forEach(({ id, d }) => { (groups[d] = groups[d] || []).push(id); });
     const pos = {};
-    for (let i = 0; i < n; i++) {
-      const angle = -Math.PI / 2 + (i / n) * Math.PI * 1.8;
-      const r = Math.min(150, 110 + (i % 2) * 30);
-      pos[i] = { x: W / 2 + Math.cos(angle) * r, y: H / 2 + Math.sin(angle) * r * 0.9 };
-    }
-    // 起点固定左下、终点固定右上（故事锚点）
-    pos[g.start] = { x: 90, y: H - 70 };
-    pos[g.end] = { x: W - 90, y: 70 };
+    Object.keys(groups).forEach(d => {
+      const ids = groups[d];
+      ids.forEach((id, i) => {
+        const x = 90 + (Number(d) / Math.max(maxDepth, 1)) * (W - 180);
+        const y = H / 2 + (i - (ids.length - 1) / 2) * 78;
+        pos[id] = { x, y };
+      });
+    });
+    // 起点/终点锚定（故事锚点）
+    pos[g.start] = { x: 90, y: H / 2 };
+    pos[g.end] = { x: W - 90, y: H / 2 };
     state.pos = pos;
 
     let lines = '';
     const drawn = new Set();
+    let ei = 0;
     g.edges.forEach(e => {
       const key = Math.min(e.a, e.b) + '-' + Math.max(e.a, e.b);
       if (drawn.has(key)) return;
       drawn.add(key);
+      ei++;
       const a = pos[e.a], b = pos[e.b];
       const mx = (a.x + b.x) / 2, my = (a.y + b.y) / 2;
+      // 标签错位：按边序号上下左右微调，避免重叠
+      const offX = (ei % 3 - 1) * 14, offY = (ei % 2 === 0 ? 1 : -1) * 12;
       lines += '<line class="map-line" data-edge="' + e.a + '-' + e.b + '" x1="' + a.x + '" y1="' + a.y +
         '" x2="' + b.x + '" y2="' + b.y + '"></line>' +
-        '<text class="edge-label" x="' + mx + '" y="' + my + '">' + e.w + '💰</text>';
+        '<text class="edge-label" x="' + (mx + offX) + '" y="' + (my + offY) + '">' + e.w + '💰</text>';
     });
 
     let stations = '';

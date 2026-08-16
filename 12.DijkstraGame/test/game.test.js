@@ -1,7 +1,7 @@
 // 《小猪省钱路》核心逻辑测试（Dijkstra）
 const test = require('node:test');
 const assert = require('node:assert');
-const { createPigGame } = require('../js/game.1.0.js');
+const { createPigGame } = require('../js/game.1.1.js');
 
 test('初始化：图连通、边权 1-9、终点 ≠ 起点', () => {
   const g = createPigGame('challenge');
@@ -190,3 +190,34 @@ test('reset：恢复初始', () => {
   assert.strictEqual(g.currentNode, g.start);
   assert.ok(!g.isDone);
 });
+test('至少 2 条不同路径（孩子有得选！）——宝宝模式', () => {
+  for (let t = 0; t < 20; t++) {
+    const g = createPigGame('baby');
+    assert.ok(countPathsMin(g) >= 2, '第 ' + t + ' 次只有 ' + countPathsMin(g) + ' 条路');
+  }
+});
+
+test('至少 2 条不同路径——挑战模式', () => {
+  for (let t = 0; t < 20; t++) {
+    const g = createPigGame('challenge');
+    assert.ok(countPathsMin(g) >= 2, '第 ' + t + ' 次只有 ' + countPathsMin(g) + ' 条路');
+  }
+});
+
+function countPathsMin(g) {
+  let count = 0;
+  function dfs(cur, visited) {
+    if (count >= 2) return;
+    if (cur === g.end) { count++; return; }
+    g.edges.filter(e => e.a === cur || e.b === cur).forEach(e => {
+      const nb = e.a === cur ? e.b : e.a;
+      if (!visited.has(nb)) {
+        visited.add(nb);
+        dfs(nb, visited);
+        visited.delete(nb);
+      }
+    });
+  }
+  dfs(g.start, new Set([g.start]));
+  return count;
+}

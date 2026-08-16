@@ -26,24 +26,72 @@ function createPigGame(mode) {
   for (let i = 1; i < n; i++) {
     addEdge(i, Math.floor(Math.random() * i));
   }
-  // 额外边
-  const extra = baby ? 1 : 3;
-  for (let e = 0; e < extra; e++) {
-    addEdge(Math.floor(Math.random() * n), Math.floor(Math.random() * n));
+
+  // 各节点到起点的深度（分层布局 + 连边规则用）
+  const depth = bfsDepth(start);
+  let end = start;
+  depth.forEach((d, id) => { if (d > depth.get(end)) end = id; });
+
+  // 额外边：只连"同层或相邻层"的节点 → 形成替代路线，画布不交叉
+  const extra = baby ? 2 : 3;
+  let added = 0, attempts = 0;
+  while (added < extra && attempts < 60) {
+    attempts++;
+    const a = Math.floor(Math.random() * n);
+    const b = Math.floor(Math.random() * n);
+    if (a === b) continue;
+    if (edges.some(e => (e.a === a && e.b === b) || (e.a === b && e.b === a))) continue;
+    if (Math.abs(depth.get(a) - depth.get(b)) > 1) continue;   // 同层/相邻层
+    addEdge(a, b);
+    added++;
   }
 
-  // 终点 = BFS 最远节点
-  const dist = new Map([[start, 0]]);
-  const q = [start];
-  while (q.length) {
-    const cur = q.shift();
-    edges.filter(e => e.a === cur || e.b === cur).forEach(e => {
-      const nb = e.a === cur ? e.b : e.a;
-      if (!dist.has(nb)) { dist.set(nb, dist.get(cur) + 1); q.push(nb); }
-    });
+  // 硬保证：起点到终点至少 2 条不同路径（孩子要有得选！）
+  // 第一轮：深度差 ≤ 2（画布较整洁）；第二轮：彻底放开（窄图兜底）
+  for (const maxDiff of [2, 99]) {
+    let guard = 0;
+    while (countPaths() < 2 && guard++ < 40) {
+      const a = Math.floor(Math.random() * n);
+      const b = Math.floor(Math.random() * n);
+      if (a === b) continue;
+      if (edges.some(e => (e.a === a && e.b === b) || (e.a === b && e.b === a))) continue;
+      if (Math.abs(depth.get(a) - depth.get(b)) > maxDiff) continue;
+      addEdge(a, b);
+    }
+    if (countPaths() >= 2) break;
   }
-  let end = start;
-  dist.forEach((d, id) => { if (d > dist.get(end)) end = id; });
+
+  function bfsDepth(s) {
+    const d = new Map([[s, 0]]);
+    const q = [s];
+    while (q.length) {
+      const cur = q.shift();
+      edges.filter(e => e.a === cur || e.b === cur).forEach(e => {
+        const nb = e.a === cur ? e.b : e.a;
+        if (!d.has(nb)) { d.set(nb, d.get(cur) + 1); q.push(nb); }
+      });
+    }
+    return d;
+  }
+
+  function countPaths() {
+    // 简单路径计数（DFS，最多数到 2 就够）
+    let count = 0;
+    function dfs(cur, visited) {
+      if (count >= 2) return;
+      if (cur === end) { count++; return; }
+      edges.filter(e => e.a === cur || e.b === cur).forEach(e => {
+        const nb = e.a === cur ? e.b : e.a;
+        if (!visited.has(nb)) {
+          visited.add(nb);
+          dfs(nb, visited);
+          visited.delete(nb);
+        }
+      });
+    }
+    dfs(start, new Set([start]));
+    return count;
+  }
 
   // ---- Dijkstra 状态 ----
   const costs = new Map([[start, 0]]);
@@ -192,7 +240,7 @@ function createPigGame(mode) {
   }
 
   return {
-    mode, nodeCount: n, start, end, edges,
+    mode, nodeCount: n, start, end, edges, depth: [...depth.entries()].map(([id, d]) => ({ id, d })),
     get currentNode() { return babyPos; },
     get currentTotal() { return babyTotal; },
     get isDone() { return done; },

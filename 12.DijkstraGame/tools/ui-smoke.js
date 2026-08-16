@@ -18,6 +18,12 @@ const URL = 'file:///' + path.resolve(__dirname, '..', 'index.html').split(path.
   // 宝宝模式：地图 + 走邻居到终点
   check('地图渲染', await page.$('.map svg') !== null);
   check('起点🏠/终点🏫标记', await page.$('.station.end') !== null);
+  // 多条路线保证：边数 > 节点数-1（存在环 → 有选择）
+  const topo = await page.evaluate(() => {
+    const g = window.__game;
+    return { edges: g.edges.length, nodes: g.nodeCount };
+  });
+  check('存在替代路线（边 ' + topo.edges + ' > 树 ' + (topo.nodes - 1) + '）', topo.edges > topo.nodes - 1);
   const baby = await page.evaluate(() => {
     const g = window.__game;
     // 用 BFS 距离引导走向终点
