@@ -72,6 +72,7 @@
     setHint('抽一本当标杆！随便选哪本都行～');
     setFeedback('', '');
     document.getElementById('record').textContent = '';
+    window.__game = state.game;   // 测试钩子
     updateStatus();
   }
 

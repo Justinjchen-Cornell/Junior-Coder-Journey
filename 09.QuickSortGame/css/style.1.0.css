@@ -112,3 +112,6 @@ body {
   .side-btn { padding: 14px 18px; font-size: 1rem; }
   .title { font-size: 1.5rem; }
 }
+
+/* fast 模式（测试）：禁用所有动画 */
+.fast * { animation: none !important; transition: none !important; }

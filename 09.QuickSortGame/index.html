@@ -6,7 +6,11 @@
   <title>书架整理员 📚</title>
   <link rel="stylesheet" href="css/style.1.0.css">
 </head>
-<body>
+<body class="">
+<script>
+  // fast 模式（测试用）：禁用动画，避免点击稳定性干扰
+  if (location.search.includes('fast=1')) document.body.className = 'fast';
+</script>
   <div id="app">
     <section id="screen-animal" class="screen active">
       <h1 class="title">📚 书架整理员</h1>
