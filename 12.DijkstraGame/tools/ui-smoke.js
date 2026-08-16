@@ -11,7 +11,7 @@ const URL = 'file:///' + path.resolve(__dirname, '..', 'index.html').split(path.
   const check = (name, cond) => { log.push(`${cond ? '✅' : '❌'} ${name}`); if (!cond) process.exitCode = 1; };
 
   await page.goto(URL);
-  check('标题', (await page.title()) === '小猪省钱路 🐷');
+  check('标题', (await page.title()) === '工程队送货路 🚜');
   await page.click('[data-animal="🐰"]');
   await page.click('.mode-btn.baby');
 
@@ -72,5 +72,5 @@ const URL = 'file:///' + path.resolve(__dirname, '..', 'index.html').split(path.
 
   console.log(log.join('\n'));
   await browser.close();
-  console.log(process.exitCode ? '\n有失败项 ❌' : '\n小猪省钱路冒烟全部通过 🎉');
+  console.log(process.exitCode ? '\n有失败项 ❌' : '\n工程队送货路冒烟全部通过 🎉');
 })();

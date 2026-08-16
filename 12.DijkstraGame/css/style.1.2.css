@@ -98,3 +98,28 @@ body {
   .animal-picker button { width: 64px; height: 64px; font-size: 1.9rem; }
   .title { font-size: 1.5rem; }
 }
+
+/* v1.2 神奇的本子（优先队列）+ 工程队主题 */
+.notebook {
+  background: linear-gradient(180deg, #fffbe6, #fff3cd);
+  border: 4px solid #d4a017; border-radius: 14px; padding: 10px 12px; margin: 8px 0;
+  box-shadow: 0 4px 10px rgba(0,0,0,.12);
+}
+.notebook-title { font-size: .9rem; font-weight: 900; color: #8a6a1f; margin-bottom: 6px; }
+.notebook-rows { display: flex; flex-direction: column; gap: 4px; }
+.nb-row {
+  display: flex; align-items: center; gap: 8px; background: #fff;
+  border: 2px solid #e8d9a8; border-radius: 10px; padding: 5px 12px;
+  font-size: .98rem; font-weight: 800; transition: background .3s, transform .3s;
+}
+.nb-row .nb-face { font-size: 1.2rem; }
+.nb-row .nb-km { margin-left: auto; color: #2e7d32; font-weight: 900; }
+.nb-row.top {
+  border-color: #ff8a50; background: #fff0e6;
+  box-shadow: 0 0 10px rgba(255,138,80,.5);
+  animation: top-bob 1.2s ease infinite;
+}
+.nb-row.top::before { content: '👆'; }
+@keyframes top-bob { 0%,100% { transform: translateX(0); } 50% { transform: translateX(4px); } }
+.nb-row .nb-km.flash { animation: km-flash .8s ease; color: #ff8a50; }
+@keyframes km-flash { 0% { transform: scale(2); color: #ff8a50; } 100% { transform: scale(1); } }

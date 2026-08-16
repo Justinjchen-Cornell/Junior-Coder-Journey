@@ -170,6 +170,19 @@ function createPigGame(mode) {
     return panel;
   }
 
+  function getNotebook() {
+    // 神奇的本子：未定案的已发现基地，按公里数升序（优先队列！）
+    const rows = [];
+    for (let i = 0; i < n; i++) {
+      if (processed.has(i)) continue;
+      const c = costs.get(i);
+      if (c === undefined) continue;
+      rows.push({ id: i, cost: c });
+    }
+    rows.sort((a, b) => a.cost - b.cost || a.id - b.id);
+    return rows;
+  }
+
   function getShortestPath() {
     if (finalCost === null && !done) return null;
     // 挑战模式：parents 回溯；宝宝模式：无法回溯（用 Dijkstra 重算）
@@ -245,7 +258,7 @@ function createPigGame(mode) {
     get currentTotal() { return babyTotal; },
     get isDone() { return done; },
     get mistakes() { return mistakes; },
-    pickStation, travelTo, getPanel, getShortestPath, starsFor, getStats, reset,
+    pickStation, travelTo, getPanel, getNotebook, getShortestPath, starsFor, getStats, reset,
   };
 }
 

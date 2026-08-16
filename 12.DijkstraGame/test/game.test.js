@@ -1,7 +1,7 @@
 // 《小猪省钱路》核心逻辑测试（Dijkstra）
 const test = require('node:test');
 const assert = require('node:assert');
-const { createPigGame } = require('../js/game.1.1.js');
+const { createPigGame } = require('../js/game.1.2.js');
 
 test('初始化：图连通、边权 1-9、终点 ≠ 起点', () => {
   const g = createPigGame('challenge');
@@ -221,3 +221,25 @@ function countPathsMin(g) {
   dfs(g.start, new Set([g.start]));
   return count;
 }
+test('本子（优先队列）：未定案已发现基地按公里数升序，第一行 = 面板最小', () => {
+  const g = createPigGame('challenge');
+  g.pickStation(g.start);
+  const nb = g.getNotebook();
+  assert.ok(nb.length >= 1);
+  for (let i = 1; i < nb.length; i++) {
+    assert.ok(nb[i].cost >= nb[i - 1].cost, '本子应按公里数升序');
+  }
+  const panel = g.getPanel();
+  let minId = null, minCost = Infinity;
+  panel.forEach((p, id) => {
+    if (!p.processed && p.cost < Infinity && p.cost < minCost) { minCost = p.cost; minId = id; }
+  });
+  assert.strictEqual(nb[0].id, minId, '第一行 = 当前最近');
+});
+
+test('本子：定案后该站从本子消失', () => {
+  const g = createPigGame('challenge');
+  g.pickStation(g.start);
+  const before = g.getNotebook();
+  assert.ok(before.some(r => r.id === g.start) === false, '起点已定案不在本子');
+});
