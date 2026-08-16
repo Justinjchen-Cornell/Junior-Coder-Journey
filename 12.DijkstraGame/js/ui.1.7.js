@@ -72,6 +72,9 @@
     document.getElementById('mission').textContent = isTeam()
       ? '🎯 从 🚜 基地 到 🏗️ 工地，公里数最少！'
       : '🎯 从 🏠 家 到 🏫 学校，硬币最少！';
+    setHint(isTeam()
+      ? '📔 翻开本子，点第一行（👆 最近）处理它！'
+      : state.mode === 'baby' ? '点相邻的路走，帮小猪省钱！' : '点价格最小的站，Dijkstra 操作台！');
     showScreen('screen-game');
     renderMap();
     updateUI();
@@ -226,29 +229,72 @@
     if (isTeam()) renderNotebook();
   }
 
-  // 神奇的本子：未定案已发现基地，按公里数升序，第一行高亮
+  // 神奇的本子：主要操作台！点第一行处理它；点错行会提示
   function renderNotebook() {
     const g = state.game;
     const rows = g.getNotebook();
     const panel = g.getPanel();
     const el = document.getElementById('notebook-rows');
     if (!el) return;
+    // 已完成区（定案的基地）
+    const done = [];
+    panel.forEach((p, id) => { if (p.processed) done.push({ id, cost: p.cost }); });
+    const doneHtml = done.length
+      ? '<div class="nb-done">✅ 已处理：' + done.map(d => faceOf(d.id) + ' ' + d.cost + '公里').join(' · ') + '</div>'
+      : '';
     if (!rows.length) {
-      el.innerHTML = '<div class="nb-row top"><span class="nb-face">🏗️</span>工地就在眼前！<span class="nb-km">' +
-        (panel[g.end].cost === Infinity ? '∞' : panel[g.end].cost) + ' 公里</span></div>';
+      el.innerHTML = doneHtml +
+        '<div class="nb-row top"><span class="nb-face">🏗️</span>工地就在眼前！<span class="nb-km">' +
+        (panel[g.end].cost === Infinity ? '∞' : panel[g.end].cost) + ' 公里</span>' +
+        '<button class="nb-act" data-nbid="' + g.end + '">处理它！</button></div>';
+      bindNb();
       return;
     }
     // 比较旧公里数 → 更新过的行加闪光
     const prevKms = state.nbKms || {};
     state.nbKms = {};
     rows.forEach(r => { state.nbKms[r.id] = r.cost; });
-    el.innerHTML = rows.map((r, i) => {
+    el.innerHTML = doneHtml + rows.map((r, i) => {
       const flashed = prevKms[r.id] !== undefined && prevKms[r.id] > r.cost ? ' flash' : '';
-      return '<div class="nb-row' + (i === 0 ? ' top' : '') + '" data-nbid="' + r.id + '">' +
+      return '<button class="nb-row' + (i === 0 ? ' top' : '') + '" data-nbid="' + r.id + '">' +
         '<span class="nb-face">' + faceOf(r.id) + '</span>' +
         '<span>' + r.id + ' 号基地</span>' +
-        '<span class="nb-km' + flashed + '">' + r.cost + ' 公里</span></div>';
+        '<span class="nb-km' + flashed + '">' + r.cost + ' 公里</span>' +
+        (i === 0 ? '<span class="nb-act">处理它！</span>' : '') +
+        '</button>';
     }).join('');
+    bindNb();
+  }
+
+  // 点本子行：第一行 = 处理；其他行 = 提示 + 第一行抖动
+  function bindNb() {
+    document.querySelectorAll('.nb-row, .nb-act').forEach(btn => {
+      btn.addEventListener('click', () => onNbClick(Number(btn.dataset.nbid)));
+    });
+  }
+
+  function onNbClick(id) {
+    const g = state.game;
+    if (g.isDone) return;
+    if (g.pickStation(id)) {
+      playSound('correct');
+      if (g.isDone) { finishWin(); return; }
+      setFeedback('✅ ' + faceOf(id) + ' 定案！本子重新排好了，看谁跳上来！', 'ok');
+      updateUI();
+    } else {
+      playSound('wrong');
+      const nb = g.getNotebook();
+      const top = nb.length ? nb[0] : null;
+      const topEl = document.querySelector('.nb-row.top');
+      if (topEl) {
+        topEl.classList.remove('shake');
+        void topEl.offsetWidth;
+        topEl.classList.add('shake');
+      }
+      setFeedback(top
+        ? '本子上第一行是 ' + faceOf(top.id) + '（' + top.cost + ' 公里）！先处理它 👆'
+        : '先处理本子上最近的基地！', 'no');
+    }
   }
 
   function setHint(msg) { document.getElementById('hint').textContent = msg; }

@@ -129,3 +129,25 @@ body {
 .map-line.alt {
   stroke: #26a69a; stroke-dasharray: 7 5; opacity: .85;
 }
+
+/* v1.7 本子可交互 */
+.nb-row {
+  cursor: pointer; text-align: left; width: 100%;
+  font-family: inherit; font-size: .98rem; font-weight: 800; color: var(--ink);
+}
+.nb-row:active { transform: scale(.98); }
+.nb-row.shake { animation: nb-shake .4s ease; border-color: #d32f2f; }
+@keyframes nb-shake {
+  0%,100% { transform: translateX(0); }
+  25% { transform: translateX(-6px); }
+  75% { transform: translateX(6px); }
+}
+.nb-act {
+  background: #ff8a50; color: #fff; border: none; border-radius: 12px;
+  font-size: .85rem; font-weight: 900; padding: 3px 10px; margin-left: auto;
+  cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,.2); white-space: nowrap;
+}
+.nb-done {
+  font-size: .82rem; color: #2e7d32; font-weight: 700;
+  background: #e8f5e9; border-radius: 10px; padding: 4px 10px; margin-bottom: 6px;
+}

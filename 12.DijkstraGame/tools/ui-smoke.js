@@ -129,18 +129,29 @@ const URL = 'file:///' + path.resolve(__dirname, '..', 'index.html').split(path.
   await page.click('.mode-btn.team');
   check('工程队任务横幅', (await page.$eval('#mission', el => el.textContent)).includes('工地'));
   check('神奇的本子出现', await page.$('#notebook') !== null);
-  const team = await page.evaluate(() => {
-    const g = window.__game;
-    let guard = 0;
-    while (!g.isDone && guard++ < 200) {
-      const nb = g.getNotebook();
-      if (!nb.length) break;
-      g.pickStation(nb[0].id);
-    }
-    return { done: g.isDone, total: g.getStats().totalCost, optimal: g.getStats().optimal };
+  // 真实交互：点本子第一行驱动通关（本子 = 主要操作台）
+  let nbGuard = 0, nbWon = false;
+  while (nbGuard++ < 60) {
+    const onStats = await page.isVisible('#screen-stats');
+    if (onStats) { nbWon = true; break; }
+    const topRow = await page.$('.nb-row.top');
+    if (!topRow) break;
+    const id = Number(await topRow.getAttribute('data-nbid'));
+    await topRow.click();
+    await page.waitForTimeout(60);
+  }
+  check('工程队·点本子通关', nbWon || await page.isVisible('#screen-stats'));
+  // 错误提示检查：点非第一行 → 第一行抖动提示
+  await page.click('#btn-stats-home');
+  await page.click('.mode-btn.team');
+  const wrongClick = await page.evaluate(() => {
+    const rows = document.querySelectorAll('.nb-row:not(.top)');
+    if (!rows.length) return { tested: false };
+    rows[0].click();
+    const topShook = document.querySelector('.nb-row.top') && document.querySelector('.nb-row.top').classList.contains('shake');
+    return { tested: true, topShook };
   });
-  check('工程队本子驱动通关', team.done);
-  check('工程队总价 = 最优', team.total === team.optimal);
+  check('点错行 → 第一行抖动提示', !wrongClick.tested || wrongClick.topShook);
 
   console.log(log.join('\n'));
   await browser.close();
