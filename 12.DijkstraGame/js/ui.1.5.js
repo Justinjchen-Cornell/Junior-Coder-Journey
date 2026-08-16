@@ -87,34 +87,63 @@
   // ---------- SVG 地图（分层布局：起点左、终点右、中间按深度分列） ----------
   function renderMap() {
     const g = state.game;
-    const W = 800, H0 = 380;
+    const W = 820, H0 = 400;
     const n = g.nodeCount;
     const maxDepth = Math.max(...g.depth.map(d => d.d));
-    // 分层：x 按深度，y 按该层节点数均匀散布（间距动态，画布高度自适应）
+    // 中间节点布局：x 只在中间区域 [midMinX, midMaxX]，起点/终点独立锚定（绝不重叠）
+    const midMinX = 200, midMaxX = W - 200;
     const groups = {};
-    g.depth.forEach(({ id, d }) => { (groups[d] = groups[d] || []).push(id); });
-    const maxCount = Math.max(...Object.values(groups).map(a => a.length));
-    const yStep = Math.min(92, (H0 - 100) / Math.max(maxCount, 1));
-    const H = Math.max(H0, 130 + maxCount * yStep);
-    const xStep = Math.min(140, (W - 180) / Math.max(maxDepth, 1));
+    g.depth.forEach(({ id, d }) => {
+      if (id === g.start || id === g.end) return;   // 起点/终点不参与分层
+      (groups[d] = groups[d] || []).push(id);
+    });
+    const maxCount = Math.max(1, ...Object.values(groups).map(a => a.length));
+    const yStep = Math.min(96, (H0 - 110) / Math.max(maxCount, 1));
+    const H = Math.max(H0, 140 + maxCount * yStep);
     const pos = {};
     Object.keys(groups).forEach(d => {
       const ids = groups[d];
       ids.forEach((id, i) => {
-        const x = 90 + (Number(d) / Math.max(maxDepth, 1)) * (W - 180);
+        const x = midMinX + (Number(d) / Math.max(maxDepth, 1)) * (midMaxX - midMinX);
         const y = H / 2 + (i - (ids.length - 1) / 2) * yStep;
         pos[id] = { x, y };
       });
     });
-    // 起点/终点锚定（故事锚点）
-    pos[g.start] = { x: 90, y: H / 2 };
-    pos[g.end] = { x: W - 90, y: H / 2 };
+    // 起点/终点锚定（故事锚点，左右两端，远离中间节点区）
+    pos[g.start] = { x: 95, y: H / 2 };
+    pos[g.end] = { x: W - 95, y: H / 2 };
+    // 松弛防重叠：任意两节点距离 < 68 → 沿 y 推开（限制在画布内）
+    const ids = Object.keys(pos).map(Number);
+    for (let it = 0; it < 12; it++) {
+      let moved = false;
+      for (let i = 0; i < ids.length && !moved; i++) {
+        for (let j = i + 1; j < ids.length; j++) {
+          const a = pos[ids[i]], b = pos[ids[j]];
+          const d = Math.hypot(a.x - b.x, a.y - b.y);
+          if (d < 68) {
+            const push = (68 - d) / 2 + 6;
+            const dir = a.y <= b.y ? -1 : 1;
+            b.y = Math.min(H - 50, Math.max(50, b.y + push * dir));
+            a.y = Math.min(H - 50, Math.max(50, a.y - push * dir));
+            moved = true;
+          }
+        }
+      }
+      if (!moved) break;
+    }
     state.pos = pos;
 
     let lines = '';
     const drawn = new Set();
+    const drawnEdges = [];                 // 已画边（标签避让检查用）
     const nodePosList = Object.values(pos);
     const placedLabels = [];
+    function pointSegDist(px, py, x1, y1, x2, y2) {
+      const dx = x2 - x1, dy = y2 - y1;
+      const len2 = dx * dx + dy * dy || 1;
+      const t = Math.max(0, Math.min(1, ((px - x1) * dx + (py - y1) * dy) / len2));
+      return Math.hypot(px - (x1 + t * dx), py - (y1 + t * dy));
+    }
     g.edges.forEach((e, idx) => {
       const key = Math.min(e.a, e.b) + '-' + Math.max(e.a, e.b);
       if (drawn.has(key)) return;
@@ -126,17 +155,23 @@
       const dx = b.x - a.x, dy = b.y - a.y;
       const len = Math.sqrt(dx * dx + dy * dy) || 1;
       const px = -dy / len, py = dx / len;          // 边的垂直方向
-      let off = 16 * (idx % 2 === 0 ? 1 : -1);
+      let off = 18 * (idx % 2 === 0 ? 1 : -1);
       let lx = mx0(a, b) + px * off, ly = my0(a, b) + py * off;
-      for (let g2 = 0; g2 < 8; g2++) {
-        const nearNode = nodePosList.some(p => Math.hypot(lx - p.x, ly - p.y) < 34);
-        const nearLabel = placedLabels.some(l => Math.hypot(lx - l.x, ly - l.y) < 34);
-        if (!nearNode && !nearLabel) break;
-        off += 14 * (off >= 0 ? 1 : -1);
+      for (let g2 = 0; g2 < 10; g2++) {
+        const nearNode = nodePosList.some(p => Math.hypot(lx - p.x, ly - p.y) < 36);
+        const nearLabel = placedLabels.some(l => Math.hypot(lx - l.x, ly - l.y) < 36);
+        // 压在别的边线上？点到所有边的距离 < 20
+        const onEdge = drawnEdges.some(e2 => {
+          const p1 = pos[e2.a], p2 = pos[e2.b];
+          return pointSegDist(lx, ly, p1.x, p1.y, p2.x, p2.y) < 20;
+        });
+        if (!nearNode && !nearLabel && !onEdge) break;
+        off += 16 * (off >= 0 ? 1 : -1);
         lx = mx0(a, b) + px * off;
         ly = my0(a, b) + py * off;
       }
       placedLabels.push({ x: lx, y: ly });
+      drawnEdges.push(e);
       lines += '<text class="edge-label" x="' + lx.toFixed(1) + '" y="' + ly.toFixed(1) + '">' +
         e.w + (isTeam() ? 'km' : '💰') + '</text>';
     });

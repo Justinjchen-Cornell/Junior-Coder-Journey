@@ -46,6 +46,23 @@ const URL = 'file:///' + path.resolve(__dirname, '..', 'index.html').split(path.
   });
   check('节点无越界（' + layout.vb + '）', layout.out.length === 0);
   check('标签互不重叠（' + layout.labels + ' 个标签）', layout.close === 0);
+  // 节点两两距离检查（≥55，终点不与中间节点覆盖）
+  const spacing = await page.evaluate(() => {
+    const pts = [];
+    document.querySelectorAll('.station').forEach(g => {
+      const t = g.getAttribute('transform');
+      const m = t.match(/translate\((\d+(?:\.\d+)?),(\d+(?:\.\d+)?)\)/);
+      if (m) pts.push({ x: Number(m[1]), y: Number(m[2]) });
+    });
+    let min = Infinity;
+    for (let i = 0; i < pts.length; i++) {
+      for (let j = i + 1; j < pts.length; j++) {
+        min = Math.min(min, Math.hypot(pts[i].x - pts[j].x, pts[i].y - pts[j].y));
+      }
+    }
+    return min;
+  });
+  check('节点最小间距 ' + spacing.toFixed(0) + ' ≥55', spacing >= 55);
   // 多条路线保证：边数 > 节点数-1（存在环 → 有选择）
   const topo = await page.evaluate(() => {
     const g = window.__game;

@@ -1,7 +1,7 @@
 // 《小猪省钱路》核心逻辑测试（Dijkstra）
 const test = require('node:test');
 const assert = require('node:assert');
-const { createPigGame } = require('../js/game.1.4.js');
+const { createPigGame } = require('../js/game.1.5.js');
 
 test('初始化：图连通、边权 1-9、终点 ≠ 起点', () => {
   const g = createPigGame('challenge');
