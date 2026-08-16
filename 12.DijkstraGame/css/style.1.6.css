@@ -125,3 +125,7 @@ body {
 @keyframes km-flash { 0% { transform: scale(2); color: #ff8a50; } 100% { transform: scale(1); } }
 
 .mode-btn.team { border-color: #ff8a50; }
+
+.map-line.alt {
+  stroke: #26a69a; stroke-dasharray: 7 5; opacity: .85;
+}

@@ -63,6 +63,15 @@ const URL = 'file:///' + path.resolve(__dirname, '..', 'index.html').split(path.
     return min;
   });
   check('节点最小间距 ' + spacing.toFixed(0) + ' ≥55', spacing >= 55);
+  // 近道可见 + 终点在最上层
+  const vis = await page.evaluate(() => {
+    const alts = document.querySelectorAll('.map-line.alt').length;
+    const sts = document.querySelectorAll('.station');
+    const last = sts[sts.length - 1];
+    return { alts, lastIsEnd: last.getAttribute('data-station') === String(window.__game.end) };
+  });
+  check('存在近道虚线（替代路线可见）', vis.alts >= 1);
+  check('终点绘制在最上层', vis.lastIsEnd);
   // 多条路线保证：边数 > 节点数-1（存在环 → 有选择）
   const topo = await page.evaluate(() => {
     const g = window.__game;

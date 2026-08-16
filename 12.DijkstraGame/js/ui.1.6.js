@@ -144,12 +144,16 @@
       const t = Math.max(0, Math.min(1, ((px - x1) * dx + (py - y1) * dy) / len2));
       return Math.hypot(px - (x1 + t * dx), py - (y1 + t * dy));
     }
+    const depthOf = {};
+    g.depth.forEach(({ id, d }) => { depthOf[id] = d; });
     g.edges.forEach((e, idx) => {
       const key = Math.min(e.a, e.b) + '-' + Math.max(e.a, e.b);
       if (drawn.has(key)) return;
       drawn.add(key);
       const a = pos[e.a], b = pos[e.b];
-      lines += '<line class="map-line" data-edge="' + e.a + '-' + e.b + '" x1="' + a.x + '" y1="' + a.y +
+      // 同层边 = "近道"：虚线青色，一眼看出替代路线
+      const alt = depthOf[e.a] === depthOf[e.b] ? ' alt' : '';
+      lines += '<line class="map-line' + alt + '" data-edge="' + e.a + '-' + e.b + '" x1="' + a.x + '" y1="' + a.y +
         '" x2="' + b.x + '" y2="' + b.y + '"></line>';
       // 边权标签：中点 + 垂直方向偏移 + 碰撞避免（自动推远）
       const dx = b.x - a.x, dy = b.y - a.y;
@@ -179,15 +183,18 @@
     function my0(a, b) { return (a.y + b.y) / 2; }
 
     let stations = '';
-    for (let i = 0; i < n; i++) {
+    const order = [g.start].concat(
+      Array.from({ length: n }, (_, i) => i).filter(i => i !== g.start && i !== g.end),
+      [g.end]);   // 终点最后绘制 → 永远在最上层
+    order.forEach(i => {
       const p = pos[i];
       const face = stationFace(i);
       stations += '<g class="station" data-station="' + i + '" transform="translate(' + p.x + ',' + p.y + ')">' +
-        '<circle r="28"></circle>' +
+        '<circle r="' + (i === g.end ? 32 : 28) + '"></circle>' +
         '<text class="face" y="-1">' + face + '</text>' +
         '<text class="coin-label" y="44">∞</text>' +
         '</g>';
-    }
+    });
     document.getElementById('map').innerHTML =
       '<svg viewBox="0 0 ' + W + ' ' + H + '">' + lines + stations + '</svg>';
     bindStations();

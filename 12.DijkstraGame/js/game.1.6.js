@@ -35,6 +35,18 @@ function createPigGame(mode) {
   // 额外边：只连"同层或相邻层"的节点 → 形成替代路线，画布不交叉
   const extra = baby ? 2 : 3;
   let added = 0, attempts = 0;
+  // 第一优先：同层边（视觉可见的"近道"，形成明显环路）
+  while (added < 1 && attempts < 60) {
+    attempts++;
+    const a = Math.floor(Math.random() * n);
+    const b = Math.floor(Math.random() * n);
+    if (a === b) continue;
+    if (edges.some(e => (e.a === a && e.b === b) || (e.a === b && e.b === a))) continue;
+    if (depth.get(a) !== depth.get(b)) continue;              // 必须同层
+    addEdge(a, b);
+    added++;
+  }
+  attempts = 0;
   while (added < extra && attempts < 60) {
     attempts++;
     const a = Math.floor(Math.random() * n);
