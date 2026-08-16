@@ -1,0 +1,128 @@
+/* 排队买冰淇淋 · 卡通风格（延续小动物森林世界观） */
+:root {
+  --sky: #ffd9a0;
+  --cream: #fff6e5;
+  --pink: #ff8fb3;
+  --choco: #6b4a2b;
+  --ink: #3a2e1f;
+  --gold: #ffd54f;
+  --green: #6ec96e;
+  --dim: #c8c2b4;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  font-family: "PingFang SC", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+  background: linear-gradient(180deg, #ffe3b3 0%, var(--cream) 60%, #b8e6b8 100%);
+  color: var(--ink);
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  overflow-x: hidden;
+}
+#app { max-width: 760px; margin: 0 auto; padding: 12px; min-height: 100vh; }
+.screen { display: none; }
+.screen.active { display: block; }
+
+/* 开场 */
+.title { text-align: center; font-size: 2rem; margin: 18px 0 4px; text-shadow: 2px 2px 0 rgba(255,255,255,.6); }
+.subtitle { text-align: center; font-size: 1.05rem; margin-bottom: 16px; color: #8a6a3f; }
+.animal-picker { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin: 18px 0; }
+.animal-picker button {
+  font-size: 2.4rem; width: 84px; height: 84px; border-radius: 50%;
+  border: 4px solid var(--choco); background: #fff;
+  cursor: pointer; box-shadow: 0 4px 8px rgba(0,0,0,.18);
+  transition: transform .15s;
+}
+.animal-picker button:active { transform: scale(.9); }
+.mode-picker { display: flex; gap: 14px; justify-content: center; margin-top: 22px; }
+.mode-btn {
+  font-size: 1.15rem; padding: 16px 22px; border-radius: 20px;
+  border: 4px solid var(--choco); cursor: pointer; background: #fff;
+  box-shadow: 0 4px 8px rgba(0,0,0,.18);
+}
+.mode-btn small { display: block; font-size: .8rem; color: #8a7a5f; margin-top: 4px; }
+.mode-btn.baby { border-color: var(--pink); }
+.mode-btn.challenge { border-color: #5c9cff; }
+
+/* 游戏头部 */
+.game-header { display: flex; align-items: center; gap: 12px; margin: 10px 0; }
+.animal-face { font-size: 2.6rem; background: #fff; border-radius: 50%; width: 66px; height: 66px;
+  display: flex; align-items: center; justify-content: center; border: 4px solid var(--choco); }
+.header-info { flex: 1; }
+.hint { font-size: 1.1rem; font-weight: 700; }
+.status-line { display: flex; gap: 10px; align-items: center; margin-top: 4px; font-size: .9rem; flex-wrap: wrap; }
+.eyes { font-size: 1rem; }
+
+/* 队伍区 */
+.queue-zone { background: rgba(255,255,255,.75); border-radius: 18px; padding: 10px; margin: 8px 0; border: 3px dashed var(--pink); }
+.queue-label { font-size: .85rem; font-weight: 700; color: #b0607f; margin-bottom: 6px; }
+.queue { display: flex; gap: 6px; flex-wrap: wrap; min-height: 58px; }
+.queue .q-card { animation: hop .35s ease; }
+@keyframes hop { 0% { transform: translateY(-40px) scale(.5); opacity: 0; } 60% { transform: translateY(4px) scale(1.1); } 100% { transform: translateY(0) scale(1); opacity: 1; } }
+
+/* 牌区 */
+.board { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin: 8px 0; }
+.card {
+  width: 64px; height: 78px; border-radius: 12px; font-size: 1.2rem; font-weight: 700;
+  border: 3px solid var(--choco); background: #fff; cursor: pointer;
+  box-shadow: 0 3px 6px rgba(0,0,0,.15); position: relative;
+  transition: transform .12s, opacity .3s;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+}
+.card .animal { font-size: 1.8rem; }
+.card .num { font-size: 1.1rem; }
+.card:active { transform: scale(.92); }
+.card.face-down { background: repeating-linear-gradient(45deg, #ffc3d8, #ffc3d8 8px, #ffd9e6 8px, #ffd9e6 16px); }
+.card.face-down .animal, .card.face-down .num { display: none; }
+.card.face-down::after { content: "½3"; font-size: 1.8rem; }
+.card.flipped { background: #fff; }
+.card.flipped .animal, .card.flipped .num { display: flex; }
+.card.sorted { opacity: 0; pointer-events: none; }
+.card.selected-ok { border-color: var(--green); box-shadow: 0 0 14px rgba(110,201,110,.8); }
+
+/* 眼睛计数角标 */
+.eyes-badge {
+  position: absolute; top: -8px; right: -8px; background: #fff;
+  border: 2px solid var(--gold); border-radius: 12px; font-size: .75rem;
+  padding: 1px 6px; box-shadow: 0 2px 4px rgba(0,0,0,.15);
+  animation: pop-in .3s ease;
+}
+@keyframes pop-in { 0% { transform: scale(0); } 80% { transform: scale(1.3); } 100% { transform: scale(1); } }
+
+/* 扫描光效 */
+.scan-flash { animation: scan .5s ease; }
+@keyframes scan { 0% { box-shadow: 0 0 0 rgba(255,213,79,0); } 40% { box-shadow: 0 0 18px rgba(255,213,79,.9); } 100% { box-shadow: 0 0 0 rgba(255,213,79,0); } }
+
+/* 反馈 */
+.feedback { text-align: center; font-size: 1.35rem; font-weight: 800; min-height: 2.2rem; margin: 8px 0; }
+.feedback.ok { color: #2e7d32; }
+.feedback.no { color: #d32f2f; }
+
+/* 按钮 */
+.btn-reset, .btn-home {
+  display: block; margin: 10px auto; padding: 13px 26px; font-size: 1.05rem;
+  border-radius: 18px; border: 3px solid var(--choco); cursor: pointer;
+  background: #fff; box-shadow: 0 4px 8px rgba(0,0,0,.18);
+}
+.btn-home { background: #ffe9d6; }
+
+/* 统计页 */
+.stats-title { text-align: center; margin: 20px 0 10px; }
+.stats-box { background: rgba(255,255,255,.85); border-radius: 18px; padding: 16px; margin: 12px 0; font-size: 1rem; line-height: 1.9; }
+.stats-box .big { font-size: 1.35rem; font-weight: 800; }
+.bar-row { display: flex; align-items: center; gap: 8px; margin: 3px 0; }
+.bar-row .bar-label { width: 60px; font-size: .85rem; text-align: right; }
+.bar-row .bar { height: 18px; border-radius: 6px; background: linear-gradient(90deg, #ffd54f, #ff8fb3); transition: width .8s ease; }
+
+/* 庆祝 */
+@keyframes celebrate-pop { 0% { transform: scale(0) rotate(-20deg); } 70% { transform: scale(1.4) rotate(10deg); } 100% { transform: scale(1) rotate(0); } }
+.celebrate { animation: celebrate-pop .6s ease; display: inline-block; }
+
+/* 响应式 */
+@media (max-width: 480px) {
+  .animal-picker button { width: 64px; height: 64px; font-size: 1.9rem; }
+  .card { width: 54px; height: 66px; }
+  .card .animal { font-size: 1.5rem; }
+  .title { font-size: 1.5rem; }
+}

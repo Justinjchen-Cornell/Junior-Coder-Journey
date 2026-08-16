@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>排队买冰淇淋 🍦</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div id="app">
+    <!-- 开场 -->
+    <section id="screen-animal" class="screen active">
+      <h1 class="title">🍦 排队买冰淇淋</h1>
+      <p class="subtitle">小动物们乱糟糟的，帮它们按身高排好队吧！</p>
+      <div class="animal-picker" id="animal-picker"></div>
+      <div class="mode-picker" id="mode-picker">
+        <button class="mode-btn baby" data-mode="baby">🍼 宝宝模式<br><small>5~8 只 · 找最矮的</small></button>
+        <button class="mode-btn challenge" data-mode="challenge">🚀 挑战模式<br><small>8~12 只 · 翻牌记忆</small></button>
+      </div>
+    </section>
+
+    <!-- 游戏主界面 -->
+    <section id="screen-game" class="screen">
+      <header class="game-header">
+        <span class="animal-face" id="animal-face">🐰</span>
+        <div class="header-info">
+          <div class="hint" id="hint">谁最矮？点它！</div>
+          <div class="status-line">
+            <span class="steps" id="steps"></span>
+            <span class="eyes" id="eyes"></span>
+            <span class="record" id="record"></span>
+          </div>
+        </div>
+      </header>
+
+      <!-- 已排好的队伍（目标区） -->
+      <div class="queue-zone">
+        <div class="queue-label">🍦 冰淇淋队伍</div>
+        <div class="queue" id="queue"></div>
+      </div>
+
+      <!-- 剩余的小动物（牌区） -->
+      <div class="card-zone">
+        <div class="queue-label">🐾 还没排队的</div>
+        <div class="board" id="board"></div>
+      </div>
+
+      <div class="feedback" id="feedback"></div>
+      <button class="btn-reset" id="btn-reset">🔄 再来一次</button>
+      <button class="btn-home" id="btn-home">🏠 换一批小动物</button>
+    </section>
+
+    <!-- 统计页（挑战模式结算） -->
+    <section id="screen-stats" class="screen">
+      <h2 class="stats-title" id="stats-title">排好啦！</h2>
+      <div class="stats-box" id="stats-box"></div>
+      <button class="btn-reset" id="btn-stats-reset">🔄 再排一次</button>
+      <button class="btn-home" id="btn-stats-home">🏠 换个模式</button>
+    </section>
+  </div>
+  <script src="js/game.js"></script>
+  <script src="js/ui.js"></script>
+</body>
+</html>
